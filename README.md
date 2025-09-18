@@ -2,7 +2,7 @@
 Hospital Management System
 
 Установка и запуск проекта:
-
+__________________________________________________________________________________________________
 Если у вас Windows:
 Устанавливаем JDK как на видео:
 https://www.youtube.com/watch?v=FXh0GN1qokY
@@ -16,6 +16,8 @@ https://www.jetbrains.com/idea/download/?section=windows
 Далее из командной строки вводим команду git clone https://github.com/em-kstu/hms
 Это склонирует наш репозиторий вам на компьютер.
 
+Установка Postgres по ссылке или можно скачать образ из Docker
+https://www.youtube.com/watch?v=nxGhGQFk34Y
 после соединяемся с базой данных https://www.youtube.com/watch?v=RAdduEhWMks
 
 Затем в нашем Ide открыв наш проект мы запускаем его следующими командами, которые нам следует ввести из командной строки:
@@ -23,10 +25,10 @@ cd hospital_management_system
 mvn clean install
 mvn spring-boot:run
 
-
+___________________________________________________________________________________________________
 Если у вас MacOS
-Установка JDK
 
+Установка JDK
 Через Homebrew:
 
 brew update
@@ -59,6 +61,9 @@ https://www.jetbrains.com/idea/download/?section=mac
 git clone https://github.com/em-kstu/hms
 cd hms
 
+Устанавливаем postgres по ссылке или из командной строки.
+https://www.youtube.com/watch?v=PShGF_udSpk
+
 Открываем проект из ide:
 Соединение с базой данных
 Следуем инструкции из видео:
@@ -71,7 +76,7 @@ cd hospital_management_system
 mvn clean install
 mvn spring-boot:run
 
-
+____________________________________________________________________________________________________
 Если Ubuntu:
 
 Установка JDK:
@@ -103,6 +108,10 @@ bash
 Copy code
 git clone https://github.com/em-kstu/hms
 cd hms
+
+Скачиваем postgres и создаем базу данных hms по ссылке или из командной строки.
+https://www.youtube.com/watch?v=UGfteFq_6Co
+
 Следуем инструкции по соединению с базой данных:
 https://www.youtube.com/watch?v=RAdduEhWMks
 
