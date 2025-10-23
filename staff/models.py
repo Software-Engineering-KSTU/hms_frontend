@@ -1,7 +1,7 @@
 from django.db import models
 from users.models import User
 from departments.models import Department
-from specializations.models import Specialization
+# from specializations.models import Specialization
 
 class Staff(models.Model):
     ROLE_CHOICES = [
@@ -29,7 +29,7 @@ class DoctorProfile(models.Model):
     staff = models.OneToOneField(Staff, on_delete=models.CASCADE, related_name='doctor_profile')
     bio = models.TextField()
     experience_years = models.PositiveIntegerField()
-    specializations = models.ManyToManyField(Specialization)
+    # specializations = models.ManyToManyField(Specialization)
 
     class Meta:
         db_table = 'doctors'
