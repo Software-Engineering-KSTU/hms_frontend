@@ -25,7 +25,6 @@ INSTALLED_APPS = [
     # Твои приложения
     'users',
     'departments',
-    'specializations',
     'staff',
     'patients',
 ]
@@ -40,7 +39,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'hms.urls'
+ROOT_URLCONF = 'core.urls'
 
 TEMPLATES = [
     {
@@ -58,7 +57,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'hms.wsgi.application'
+WSGI_APPLICATION = 'core.wsgi.application'
 
 # Настройки базы данных из .env
 DATABASES = {
@@ -71,6 +70,12 @@ DATABASES = {
         'PORT': os.getenv('DB_PORT', '5432'),
     }
 }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 # Пароли и безопасность
 AUTH_PASSWORD_VALIDATORS = [
