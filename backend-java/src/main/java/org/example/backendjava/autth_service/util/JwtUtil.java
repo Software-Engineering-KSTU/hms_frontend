@@ -3,7 +3,7 @@ package org.example.backendjava.autth_service.util;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import org.example.backendjava.autth_service.entity.User;
+import org.example.backendjava.autth_service.model.entity.User;
 import org.example.backendjava.autth_service.repository.TokenRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;

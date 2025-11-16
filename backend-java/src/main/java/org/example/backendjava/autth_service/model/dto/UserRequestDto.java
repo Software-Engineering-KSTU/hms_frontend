@@ -1,4 +1,4 @@
-package org.example.backendjava.autth_service.dto;
+package org.example.backendjava.autth_service.model.dto;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.backendjava.autth_service.entity.Role;
+import org.example.backendjava.autth_service.model.entity.Role;
 
 @AllArgsConstructor
 @NoArgsConstructor

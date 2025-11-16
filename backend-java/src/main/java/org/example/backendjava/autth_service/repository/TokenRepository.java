@@ -1,6 +1,6 @@
 package org.example.backendjava.autth_service.repository;
 
-import org.example.backendjava.autth_service.entity.Token;
+import org.example.backendjava.autth_service.model.entity.Token;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

@@ -1,9 +1,9 @@
 package org.example.backendjava.autth_service.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.backendjava.autth_service.dto.UserRequestDto;
-import org.example.backendjava.autth_service.dto.UserResponseDto;
-import org.example.backendjava.autth_service.entity.User;
+import org.example.backendjava.autth_service.model.dto.UserRequestDto;
+import org.example.backendjava.autth_service.model.dto.UserResponseDto;
+import org.example.backendjava.autth_service.model.entity.User;
 import org.example.backendjava.autth_service.mapper.UserMapper;
 import org.example.backendjava.autth_service.repository.UserRepository;
 import org.example.backendjava.autth_service.userexception.EmailAlreadyExistsException;
