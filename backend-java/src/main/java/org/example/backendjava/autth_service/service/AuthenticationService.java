@@ -2,11 +2,11 @@ package org.example.backendjava.autth_service.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.example.backendjava.autth_service.dto.AuthResponse;
-import org.example.backendjava.autth_service.dto.TokenResponseDto;
-import org.example.backendjava.autth_service.dto.UserRequestDto;
-import org.example.backendjava.autth_service.entity.Token;
-import org.example.backendjava.autth_service.entity.User;
+import org.example.backendjava.autth_service.model.dto.AuthResponse;
+import org.example.backendjava.autth_service.model.dto.TokenResponseDto;
+import org.example.backendjava.autth_service.model.dto.UserRequestDto;
+import org.example.backendjava.autth_service.model.entity.Token;
+import org.example.backendjava.autth_service.model.entity.User;
 import org.example.backendjava.autth_service.mapper.UserMapper;
 import org.example.backendjava.autth_service.repository.TokenRepository;
 import org.example.backendjava.autth_service.repository.UserRepository;

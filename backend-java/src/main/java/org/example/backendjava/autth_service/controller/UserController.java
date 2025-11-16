@@ -1,8 +1,8 @@
 package org.example.backendjava.autth_service.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.example.backendjava.autth_service.dto.UserRequestDto;
-import org.example.backendjava.autth_service.dto.UserResponseDto;
+import org.example.backendjava.autth_service.model.dto.UserRequestDto;
+import org.example.backendjava.autth_service.model.dto.UserResponseDto;
 import org.example.backendjava.autth_service.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;

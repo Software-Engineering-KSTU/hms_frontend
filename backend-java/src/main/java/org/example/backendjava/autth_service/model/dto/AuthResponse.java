@@ -1,4 +1,4 @@
-package org.example.backendjava.autth_service.dto;
+package org.example.backendjava.autth_service.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

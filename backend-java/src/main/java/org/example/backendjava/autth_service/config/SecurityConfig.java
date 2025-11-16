@@ -1,7 +1,7 @@
 package org.example.backendjava.autth_service.config;
 
 import lombok.RequiredArgsConstructor;
-import org.example.backendjava.autth_service.entity.Role;
+import org.example.backendjava.autth_service.model.entity.Role;
 import org.example.backendjava.autth_service.service.UserDetailsServiceImpl;
 import org.example.backendjava.autth_service.util.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
