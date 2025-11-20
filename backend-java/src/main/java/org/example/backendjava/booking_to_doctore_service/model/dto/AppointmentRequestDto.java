@@ -14,4 +14,7 @@ public class AppointmentRequestDto {
 
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime dateTime;
+
+    private String symptoms;          // Описание симптомов
+    private String treatmentMethods;  // Какие методы лечения предпринимал пациент
 }

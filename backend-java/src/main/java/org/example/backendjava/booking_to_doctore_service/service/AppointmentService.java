@@ -41,6 +41,10 @@ public class AppointmentService {
         appointment.setDateTime(dto.getDateTime());
         appointment.setStatus("");
 
+        appointment.setSymptoms(dto.getSymptoms());
+        appointment.setTreatmentMethods(dto.getTreatmentMethods());
+
+
         return appointmentRepository.save(appointment);
     }
 

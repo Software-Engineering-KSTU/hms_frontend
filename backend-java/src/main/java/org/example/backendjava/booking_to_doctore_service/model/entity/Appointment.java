@@ -33,4 +33,10 @@ public class Appointment {
     private LocalDateTime dateTime;
 
     private String status;
+
+    @Column(columnDefinition = "TEXT")
+    private String symptoms;
+
+    @Column(columnDefinition = "TEXT")
+    private String treatmentMethods;
 }
