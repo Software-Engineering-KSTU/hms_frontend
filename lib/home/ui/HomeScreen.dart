@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hmsweb/base/BaseScreen.dart';
 import 'package:hmsweb/base/view/CustomFooter.dart';
 import 'package:hmsweb/home/ui/view/WhyUsSection.dart';
@@ -59,6 +60,17 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
                         style: TextStyle(color: Colors.blue, fontSize: 15),
                       ),
                     ),
+                    //19.11 добавил
+                    ElevatedButton(
+                      onPressed: () {
+                        context.go('/patient');
+                      },
+                      child: Text(
+                        "Перейти к состоянию пациента",
+                        style: TextStyle(color: Colors.white, fontSize: 15),
+                      ),
+                    ),
+
                   ],
                 ),
               ),

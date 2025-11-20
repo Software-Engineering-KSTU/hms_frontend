@@ -5,6 +5,9 @@ import 'package:hmsweb/base/view/CustomAppBar.dart';
 import 'package:hmsweb/home/ui/HomeModel.dart';
 import 'package:hmsweb/home/ui/HomeScreen.dart';
 import 'package:provider/provider.dart';
+import 'package:hmsweb/home/ui/PatientStateModel.dart';
+import 'package:hmsweb/home/ui/PatientStateScreen.dart';
+
 
 GoRoute buildRoute<T extends BaseScreenModel>({
   required String path,
@@ -42,7 +45,12 @@ final GoRouter router = GoRouter(
             screen: HomeScreen(),
             createModel: () => HomeModel()
         ),
-
+//добавлен 20 11 аким
+        buildRoute(
+          path: '/patient',
+          screen: const PatientStateScreen(),
+          createModel: () => PatientStateModel(),
+        ),
         GoRoute(path: '/login', builder: (context, state) => TestScreen()),
         
 
