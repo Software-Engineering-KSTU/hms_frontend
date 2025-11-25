@@ -1,7 +1,7 @@
 package org.example.backendjava.booking_to_doctore_service.service;
 
 import lombok.RequiredArgsConstructor;
-import org.example.backendjava.autth_service.repository.UserRepository;
+import org.example.backendjava.auth_service.repository.UserRepository;
 import org.example.backendjava.booking_to_doctore_service.exception.DoctorAlreadyBookedException;
 import org.example.backendjava.booking_to_doctore_service.exception.DoctorNotFoundException;
 import org.example.backendjava.booking_to_doctore_service.exception.PatientNotFoundException;
@@ -9,13 +9,13 @@ import org.example.backendjava.booking_to_doctore_service.mapper.AppointmentMapp
 import org.example.backendjava.booking_to_doctore_service.model.dto.AppointmentRequestDto;
 import org.example.backendjava.booking_to_doctore_service.model.dto.DoctorAppiontmentResponseDto;
 import org.example.backendjava.booking_to_doctore_service.model.entity.Appointment;
-import org.example.backendjava.autth_service.model.entity.Doctor;
-import org.example.backendjava.autth_service.model.entity.Patient;
+import org.example.backendjava.auth_service.model.entity.Doctor;
+import org.example.backendjava.auth_service.model.entity.Patient;
 import org.example.backendjava.booking_to_doctore_service.model.entity.AppointmentStatus;
 import org.example.backendjava.booking_to_doctore_service.model.entity.CurrentPatientStatus;
 import org.example.backendjava.booking_to_doctore_service.repository.AppointmentRepository;
-import org.example.backendjava.autth_service.repository.DoctorRepository;
-import org.example.backendjava.autth_service.repository.PatientRepository;
+import org.example.backendjava.auth_service.repository.DoctorRepository;
+import org.example.backendjava.auth_service.repository.PatientRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
