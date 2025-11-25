@@ -1,28 +1,19 @@
-package org.example.backendjava.auth_service.model.entity;
+package org.example.backendjava.auth_service.model.dto;
 
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "doctors")
-@Getter
-@Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Doctor {
+public class DoctorResumeDto {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @OneToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    private String username;
 
     private String specialization;
 
@@ -34,11 +25,9 @@ public class Doctor {
 
     private String photoUrl;
 
-    @Column(columnDefinition = "TEXT")
     private String educationDescription;
 
     private String diplomaPhotoUrl;
 
-    @Column(columnDefinition = "TEXT")
     private String additionalInfo;
 }
