@@ -5,6 +5,9 @@ import 'package:hmsweb/base/view/CustomAppBar.dart';
 import 'package:hmsweb/home/ui/HomeModel.dart';
 import 'package:hmsweb/home/ui/HomeScreen.dart';
 import 'package:provider/provider.dart';
+import 'package:hmsweb/auth/ui/LoginScreen.dart';  // Импорт LoginScreen
+import 'package:hmsweb/auth/ui/RegistrationScreen.dart';  // Импорт RegistrationScreen
+import 'package:hmsweb/auth/AuthModel.dart';  // Импорт AuthModel
 
 GoRoute buildRoute<T extends BaseScreenModel>({
   required String path,
@@ -14,10 +17,8 @@ GoRoute buildRoute<T extends BaseScreenModel>({
   return GoRoute(
     path: path,
     builder: (context, state) {
-
       final model = createModel();
       model.initialize();
-
       return ChangeNotifierProvider.value(
         value: model,
         child: screen,
@@ -27,8 +28,9 @@ GoRoute buildRoute<T extends BaseScreenModel>({
 }
 
 final GoRouter router = GoRouter(
+  // initialLocation: '/registration',  // Начните с логина, если нужно
   routes: [
-
+//
     ShellRoute(
       builder: (context, state, child) {
         return Scaffold(
@@ -42,24 +44,60 @@ final GoRouter router = GoRouter(
             screen: HomeScreen(),
             createModel: () => HomeModel()
         ),
-
-        GoRoute(path: '/login', builder: (context, state) => TestScreen()),
-        
-
+        buildRoute(
+          path: '/login',
+          screen: LoginScreen(),
+          createModel: () => AuthModel(),
+        ),
+        buildRoute(
+          path: '/registration',
+          screen: RegistrationScreen(),
+          createModel: () => AuthModel(),
+        ),
       ],
     ),
   ],
 );
 
-class TestScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      color: Colors.red,
-    );
-  }
-
-
-
-
-}
+// final GoRouter router = GoRouter(
+//   routes: [
+//     // Auth-роуты без ShellRoute, чтобы избежать конфликта панели
+//     buildRoute(
+//       path: '/login',
+//       screen: LoginScreen(),
+//       createModel: () => AuthModel(),
+//     ),
+//     buildRoute(
+//       path: '/registration',
+//       screen: RegistrationScreen(),
+//       createModel: () => AuthModel(),
+//     ),
+//     ShellRoute(
+//       builder: (context, state, child) {
+//         return Scaffold(
+//           appBar: const CustomAppBar(),
+//           body: child,
+//         );
+//       },
+//       routes: [
+//         buildRoute(
+//           path: '/',
+//           screen: HomeScreen(),
+//           createModel: () => HomeModel(),
+//         ),
+//       ],
+//     ),
+//   ],
+// );
+// class TestScreen extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return Container(
+//       color: Colors.red,
+//     );
+//   }
+//
+//
+//
+//
+// }
