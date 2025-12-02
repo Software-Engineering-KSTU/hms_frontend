@@ -1,22 +1,14 @@
 import 'package:dio/dio.dart';
 
 class HttpRequest {
-  // Токен объявляем как константу или как поле, если он будет обновляться
-  final String myToken = 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImlhdCI6MTc2NDQ0MjE5NSwiZXhwIjoxNzY0NDQzMDk1fQ.cFIRwrLYz4iuTFx8yx7H_CXsmuHLRRYOR92OdIs-mK8OC7EmpH45MAUquOVS0hneys9xIhWpwL3jIIvJUYZgw';
 
-  // Клиент Dio объявляем с модификатором `late`
-  late final Dio dio;
+  static final _options = BaseOptions(
+    baseUrl: 'http://localhost:8080/',
+    connectTimeout: Duration(seconds: 5),
+    receiveTimeout: Duration(seconds: 3),
+  );
 
-  // Конструктор: Инициализируем dio и добавляем Interceptor
-  HttpRequest({String? baseUrl}) : dio = Dio(BaseOptions(
-    // Используйте 127.0.0.1:8080 для локальной разработки,
-    // если ваш сервер запущен на этом порту.
-    baseUrl: baseUrl ?? 'http://127.0.0.1:8080/',
-    connectTimeout: const Duration(seconds: 5),
-    receiveTimeout: const Duration(seconds: 3),
-  )) {
-    // Добавляем ваш перехватчик здесь, в теле конструктора
-    dio.interceptors.add(AuthInterceptor(myToken));
+  final dio = Dio(_options);
 
     // Полезно добавить LogInterceptor для отладки
     dio.interceptors.add(LogInterceptor(
@@ -32,6 +24,16 @@ class HttpRequest {
     return await dio.get(endpoint);
   }
 
+  Future<Response> postRequest(
+      String endpoint, {
+        Map<String, dynamic>? data,
+        Map<String, dynamic>? headers,
+      }) async {
+    return await dio.post(
+      endpoint,
+      data: data,
+      options: Options(headers: headers),
+    );
   Future<Response> postRequest(String endpoint, {dynamic data}) async {
     return await dio.post(endpoint, data: data);
   }

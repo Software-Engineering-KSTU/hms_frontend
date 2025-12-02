@@ -7,6 +7,12 @@ import 'package:hmsweb/home/ui/HomeScreen.dart';
 import 'package:hmsweb/patient_appointment/dashboard/ui/doctor_list/DoctorListScreen.dart';
 import 'package:hmsweb/patient_appointment/dashboard/ui/doctor_list/DoctorListScreenModel.dart';
 import 'package:provider/provider.dart';
+import '../doctors_summary/ui/Doctor_summery.dart';
+import '../errorpage/ui/Error404Page.dart';
+import '../errorpage/ui/Error500Page.dart';
+import 'package:hmsweb/auth/ui/LoginScreen.dart';  // Импорт LoginScreen
+import 'package:hmsweb/auth/ui/RegistrationScreen.dart';  // Импорт RegistrationScreen
+import 'package:hmsweb/auth/AuthModel.dart';  // Импорт AuthModel
 
 import '../doctor_appointment/dashboard/ui/DoctorDashboardScreen.dart';
 import '../doctor_appointment/dashboard/ui/DoctorDashboardScreenModel.dart';
@@ -63,8 +69,23 @@ final GoRouter router = GoRouter(
             screen: HomeScreen(),
             createModel: () => HomeModel()
         ),
+        buildRoute(
+          path: '/login',
+          screen: LoginScreen(),
+          createModel: () => AuthModel(),
+        ),
+        buildRoute(
+          path: '/registration',
+          screen: RegistrationScreen(),
+          createModel: () => AuthModel(),
+        ),
 
       ],
     ),
   ],
 );
+
+
+
+
+}
