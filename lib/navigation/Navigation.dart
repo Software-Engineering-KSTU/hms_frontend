@@ -7,28 +7,27 @@ import 'package:hmsweb/home/ui/HomeScreen.dart';
 import 'package:hmsweb/patient_appointment/dashboard/ui/doctor_list/DoctorListScreen.dart';
 import 'package:hmsweb/patient_appointment/dashboard/ui/doctor_list/DoctorListScreenModel.dart';
 import 'package:provider/provider.dart';
-import '../doctors_summary/ui/Doctor_summery.dart';
-import '../errorpage/ui/Error404Page.dart';
-import '../errorpage/ui/Error500Page.dart';
-import 'package:hmsweb/auth/ui/LoginScreen.dart';  // Импорт LoginScreen
-import 'package:hmsweb/auth/ui/RegistrationScreen.dart';  // Импорт RegistrationScreen
-import 'package:hmsweb/auth/AuthModel.dart';  // Импорт AuthModel
+import 'package:hmsweb/auth/ui/LoginScreen.dart';
+import 'package:hmsweb/auth/ui/RegistrationScreen.dart';
+import 'package:hmsweb/auth/AuthModel.dart';
 
 import '../doctor_appointment/dashboard/ui/DoctorDashboardScreen.dart';
 import '../doctor_appointment/dashboard/ui/DoctorDashboardScreenModel.dart';
 import '../patient_appointment/dashboard/ui/PatientDashboardScreen.dart';
 import '../patient_appointment/dashboard/ui/PatientDashboardScreenModel.dart';
 
+// Измененная сигнатура: теперь createModel принимает GoRouterState
 GoRoute buildRoute<T extends BaseScreenModel>({
   required String path,
   required Widget screen,
-  required T Function() createModel,
+  // T Function(GoRouterState state)
+  required T Function(GoRouterState state) createModel,
 }) {
   return GoRoute(
     path: path,
     builder: (context, state) {
-
-      final model = createModel();
+      // Передаем state при вызове
+      final model = createModel(state);
       model.initialize();
 
       return ChangeNotifierProvider.value(
@@ -39,22 +38,47 @@ GoRoute buildRoute<T extends BaseScreenModel>({
   );
 }
 
+final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
+
 final GoRouter router = GoRouter(
+  navigatorKey: rootNavigatorKey,
+  initialLocation: '/',
   routes: [
     buildRoute(
         path: '/doctor/dashboard',
         screen: DoctorDashboardScreen(),
-        createModel: () => DoctorDashboardScreenModel()),
+        createModel: (state) => DoctorDashboardScreenModel()),
 
     buildRoute(
         path: '/patient/doctors',
         screen: DoctorListScreen(),
-        createModel: () => DoctorListScreenModel()),
+        createModel: (state) => DoctorListScreenModel()),
+
+    GoRoute(
+      path: '/patient/dashboard',
+      builder: (context, state) => DoctorListScreen(),
+      routes: [
+        buildRoute<PatientDashboardScreenModel>(
+          path: ':doctorId',
+          screen: PatientDashboardScreen(),
+          createModel: (state) {
+            final doctorId = state.pathParameters['doctorId'];
+            return PatientDashboardScreenModel(idDoctor: doctorId!);
+          },
+        ),
+      ],
+    ),
 
     buildRoute(
-        path: '/patient/dashboard',
-        screen: PatientDashboardScreen(),
-        createModel: () => PatientDashboardScreenModel()),
+      path: '/login',
+      screen: LoginScreen(),
+      createModel: (sate) => AuthModel(),
+    ),
+    buildRoute(
+      path: '/registration',
+      screen: RegistrationScreen(),
+      createModel: (state) => AuthModel(),
+    ),
 
     ShellRoute(
       builder: (context, state, child) {
@@ -67,25 +91,9 @@ final GoRouter router = GoRouter(
         buildRoute(
             path: '/',
             screen: HomeScreen(),
-            createModel: () => HomeModel()
+            createModel: (state) => HomeModel()
         ),
-        buildRoute(
-          path: '/login',
-          screen: LoginScreen(),
-          createModel: () => AuthModel(),
-        ),
-        buildRoute(
-          path: '/registration',
-          screen: RegistrationScreen(),
-          createModel: () => AuthModel(),
-        ),
-
       ],
     ),
   ],
 );
-
-
-
-
-}

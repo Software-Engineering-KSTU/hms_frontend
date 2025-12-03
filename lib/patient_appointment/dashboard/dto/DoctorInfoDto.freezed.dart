@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DoctorInfoDto {
 
-@JsonKey(name: 'id') String get doctorId;@JsonKey(name: 'user', fromJson: _userFromJson) String get doctorName; String get specialization;
+@JsonKey(name: 'id') int get doctorId;@JsonKey(name: 'user', fromJson: _userFromJson) String get doctorName; String get specialization;
 /// Create a copy of DoctorInfoDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $DoctorInfoDtoCopyWith<$Res>  {
   factory $DoctorInfoDtoCopyWith(DoctorInfoDto value, $Res Function(DoctorInfoDto) _then) = _$DoctorInfoDtoCopyWithImpl;
 @useResult
 $Res call({
-@JsonKey(name: 'id') String doctorId,@JsonKey(name: 'user', fromJson: _userFromJson) String doctorName, String specialization
+@JsonKey(name: 'id') int doctorId,@JsonKey(name: 'user', fromJson: _userFromJson) String doctorName, String specialization
 });
 
 
@@ -68,7 +68,7 @@ class _$DoctorInfoDtoCopyWithImpl<$Res>
 @pragma('vm:prefer-inline') @override $Res call({Object? doctorId = null,Object? doctorName = null,Object? specialization = null,}) {
   return _then(_self.copyWith(
 doctorId: null == doctorId ? _self.doctorId : doctorId // ignore: cast_nullable_to_non_nullable
-as String,doctorName: null == doctorName ? _self.doctorName : doctorName // ignore: cast_nullable_to_non_nullable
+as int,doctorName: null == doctorName ? _self.doctorName : doctorName // ignore: cast_nullable_to_non_nullable
 as String,specialization: null == specialization ? _self.specialization : specialization // ignore: cast_nullable_to_non_nullable
 as String,
   ));
@@ -155,7 +155,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String doctorId, @JsonKey(name: 'user', fromJson: _userFromJson)  String doctorName,  String specialization)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  int doctorId, @JsonKey(name: 'user', fromJson: _userFromJson)  String doctorName,  String specialization)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DoctorInfoDto() when $default != null:
 return $default(_that.doctorId,_that.doctorName,_that.specialization);case _:
@@ -176,7 +176,7 @@ return $default(_that.doctorId,_that.doctorName,_that.specialization);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  String doctorId, @JsonKey(name: 'user', fromJson: _userFromJson)  String doctorName,  String specialization)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function(@JsonKey(name: 'id')  int doctorId, @JsonKey(name: 'user', fromJson: _userFromJson)  String doctorName,  String specialization)  $default,) {final _that = this;
 switch (_that) {
 case _DoctorInfoDto():
 return $default(_that.doctorId,_that.doctorName,_that.specialization);case _:
@@ -196,7 +196,7 @@ return $default(_that.doctorId,_that.doctorName,_that.specialization);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  String doctorId, @JsonKey(name: 'user', fromJson: _userFromJson)  String doctorName,  String specialization)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function(@JsonKey(name: 'id')  int doctorId, @JsonKey(name: 'user', fromJson: _userFromJson)  String doctorName,  String specialization)?  $default,) {final _that = this;
 switch (_that) {
 case _DoctorInfoDto() when $default != null:
 return $default(_that.doctorId,_that.doctorName,_that.specialization);case _:
@@ -214,7 +214,7 @@ class _DoctorInfoDto implements DoctorInfoDto {
   const _DoctorInfoDto({@JsonKey(name: 'id') required this.doctorId, @JsonKey(name: 'user', fromJson: _userFromJson) required this.doctorName, required this.specialization});
   factory _DoctorInfoDto.fromJson(Map<String, dynamic> json) => _$DoctorInfoDtoFromJson(json);
 
-@override@JsonKey(name: 'id') final  String doctorId;
+@override@JsonKey(name: 'id') final  int doctorId;
 @override@JsonKey(name: 'user', fromJson: _userFromJson) final  String doctorName;
 @override final  String specialization;
 
@@ -251,7 +251,7 @@ abstract mixin class _$DoctorInfoDtoCopyWith<$Res> implements $DoctorInfoDtoCopy
   factory _$DoctorInfoDtoCopyWith(_DoctorInfoDto value, $Res Function(_DoctorInfoDto) _then) = __$DoctorInfoDtoCopyWithImpl;
 @override @useResult
 $Res call({
-@JsonKey(name: 'id') String doctorId,@JsonKey(name: 'user', fromJson: _userFromJson) String doctorName, String specialization
+@JsonKey(name: 'id') int doctorId,@JsonKey(name: 'user', fromJson: _userFromJson) String doctorName, String specialization
 });
 
 
@@ -271,7 +271,7 @@ class __$DoctorInfoDtoCopyWithImpl<$Res>
 @override @pragma('vm:prefer-inline') $Res call({Object? doctorId = null,Object? doctorName = null,Object? specialization = null,}) {
   return _then(_DoctorInfoDto(
 doctorId: null == doctorId ? _self.doctorId : doctorId // ignore: cast_nullable_to_non_nullable
-as String,doctorName: null == doctorName ? _self.doctorName : doctorName // ignore: cast_nullable_to_non_nullable
+as int,doctorName: null == doctorName ? _self.doctorName : doctorName // ignore: cast_nullable_to_non_nullable
 as String,specialization: null == specialization ? _self.specialization : specialization // ignore: cast_nullable_to_non_nullable
 as String,
   ));

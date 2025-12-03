@@ -62,26 +62,33 @@ class PatientDashboardScreenState
           ),
 
           if (viewModel.isLoading) CircularProgressIndicator()
-          else
-            PatientSlotsWidget(
+          else PatientSlotsWidget(
               status: viewModel.status,
-              onTimeSelected: (String time) {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    if (viewModel.isNotBusyOrMine(time)) {
-                      return BookTimeDialog(
+              onTimeSelected: (String time) async {
+
+                if (viewModel.isNotBusyOrMine(time)) {
+                  final AppointmentData? inputData = await showDialog<AppointmentData>(
+                    context: context,
+                    builder: (context) {
+                      return BookTimeInputDialog(
                         title: time,
-                        content:
-                            "Вы действительно хотите записаться на это время ?",
-                        context: context,
-                        onAccept: () {
-                          viewModel.setMineStatusRegistration(time);
-                        },
-                        acceptText: 'Да',
-                        isShowNegative: true,
+                        content: "Пожалуйста, опишите симптомы и методы самолечения.",
+                        acceptText: 'Записаться',
                       );
-                    } else {
+                    },
+                  );
+
+                  if (inputData != null) {
+                    viewModel.symptomsDescription = inputData.symptomsDescription;
+                    viewModel.selfTreatmentMethodsTaken = inputData.selfTreatmentMethodsTaken;
+
+                    viewModel.setMineStatusRegistration(time);
+                  }
+
+                } else {
+                  showDialog(
+                    context: context,
+                    builder: (context) {
                       return BookTimeDialog(
                         title: "Время занято",
                         content: "На это время уже есть запись",
@@ -89,9 +96,9 @@ class PatientDashboardScreenState
                         acceptText: 'Ок',
                         isShowNegative: false,
                       );
-                    }
-                  },
-                );
+                    },
+                  );
+                }
               },
             ),
         ],

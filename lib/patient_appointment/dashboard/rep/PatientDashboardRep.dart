@@ -7,43 +7,64 @@ import 'package:hmsweb/patient_appointment/dashboard/dto/PatientAppointmentDocto
 class PatientDashboardRep {
   final _api = PatientDashboardApi();
 
-  Future<List<Map<String, StatusRegistration>>> getDoctorAppointments({
+  Future<Map<String, StatusRegistration>> getDoctorAppointments({
     required String doctorId,
-    required String date
-}) async {
+    required String date,
+  }) async {
     final response = await _api.fetchDoctorAppointments(
-        doctorId: doctorId,
-        date: date
+      doctorId: doctorId,
+      date: date,
     );
 
-    final List<Map<String, dynamic>> jsonList = response.data;
+    final List<Map<String, dynamic>> jsonList = (response.data as List<dynamic>)
+        .map((e) => e as Map<String, dynamic>)
+        .toList();
+
+    final Map<String, StatusRegistration> result = {};
 
     for (var element in jsonList) {
+      StatusRegistration status;
       if (element['busyStatus'] == 'other') {
-        element['busyStatus'] == StatusRegistration.busy;
+        status = StatusRegistration.busy;
+      } else if (element['busyStatus'] == 'mine') {
+        status = StatusRegistration.mine;
+      } else {
+        status = StatusRegistration.free;
       }
 
-      if (element['busyStatus'] == 'mine') {
-        element['busyStatus'] == StatusRegistration.mine;
-      }
+      final String timeKey = getTime(element['dateTime']);
 
-      element['dateTime'] = getTime(element['dateTime']);
+      result[timeKey] = status;
     }
 
-    return jsonList as List<Map<String, StatusRegistration>>;
+    return result;
   }
 
-  Future<void> postPatientAppointment(
+  Future<bool> postPatientAppointment(
     PatientAppointmentDoctorDto patientAppointment,
   ) async {
-
     final patientAppointmentWithFormat = PatientAppointmentDoctorDto(
-        doctorId: patientAppointment.doctorId,
-        date: getDateBackendFormat(patientAppointment.date),
-        symptomsDescription: patientAppointment.symptomsDescription,
-        selfTreatmentMethodsTaken: patientAppointment.selfTreatmentMethodsTaken);
+      doctorId: patientAppointment.doctorId,
+      date: patientAppointment.date,
+      symptomsDescription: patientAppointment.symptomsDescription,
+      selfTreatmentMethodsTaken: patientAppointment.selfTreatmentMethodsTaken,
+    );
 
-    await _api.postPatientAppointment(patientAppointmentWithFormat);
+    try {
+      final response = await _api.postPatientAppointment(
+        patientAppointmentWithFormat,
+      );
+
+      if (response.statusCode != null &&
+          (response.statusCode! >= 200 && response.statusCode! < 300)) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      print('Ошибка при записи на прием: $e');
+      return false;
+    }
   }
 
   Future<List<DoctorInfoDto>> fetchDoctors() async {
@@ -54,13 +75,10 @@ class PatientDashboardRep {
     return jsonList
         .map((e) => DoctorInfoDto.fromJson(e as Map<String, dynamic>))
         .toList();
-
   }
-
 }
 
-String getTime(String isoString) {
-  String iso = "2025-11-29T13:55:43.219Z";
+String getTime(String iso) {
   DateTime dt = DateTime.parse(iso);
 
   String time =
@@ -69,15 +87,30 @@ String getTime(String isoString) {
   return time;
 }
 
-String getDateBackendFormat(String time) {
-  DateTime now = DateTime.now();
-
+String getDateBackendFormat({
+  required DateTime dataTime,
+  required String time,
+}) {
   int hour = int.parse(time.split(":")[0]);
   int minute = int.parse(time.split(":")[1]);
 
-  DateTime result = DateTime(now.year, now.month, now.day, hour, minute);
+  DateTime result = DateTime(
+    dataTime.year,
+    dataTime.month,
+    dataTime.day,
+    hour,
+    minute,
+  );
 
   String iso = "${result.toIso8601String()}Z";
 
   return iso;
+}
+
+String getDateFromBaseDateTime(DateTime dateTime) {
+  final year = dateTime.year.toString();
+  final month = dateTime.month.toString().padLeft(2, '0');
+  final day = dateTime.day.toString().padLeft(2, '0');
+
+  return '$year-$month-$day';
 }

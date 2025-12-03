@@ -12,7 +12,7 @@ abstract class DoctorInfoDto with _$DoctorInfoDto {
 
   const factory DoctorInfoDto({
     @JsonKey(name: 'id')
-    required String doctorId,
+    required int doctorId,
     @JsonKey(name: 'user', fromJson: _userFromJson)
     required String doctorName,
     required String specialization

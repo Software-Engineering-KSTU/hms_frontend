@@ -53,7 +53,9 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
                     SizedBox(height: 15),
 
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+
+                      },
                       child: Text(
                         "Запистаься на прием",
                         style: TextStyle(color: Colors.blue, fontSize: 15),
@@ -123,7 +125,9 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
                         SizedBox(height: 25),
 
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            viewModel;
+                          },
                           child: Text(
                             "Записаться на прием",
                             style: TextStyle(

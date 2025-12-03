@@ -6,12 +6,10 @@ import '../../rep/PatientDashboardRep.dart';
 class DoctorListScreenModel extends BaseScreenModel {
 
   final _rep = PatientDashboardRep();
-  final List<DoctorInfoDto> doctors = List.empty();
+  final List<DoctorInfoDto> doctors = [];
 
   @override
   Future<void> onInitialization() async {
-    print(await _rep.fetchDoctors());
-
     doctors.addAll(await _rep.fetchDoctors());
   }
 

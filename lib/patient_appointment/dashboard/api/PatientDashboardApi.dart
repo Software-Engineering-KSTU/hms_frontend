@@ -12,20 +12,29 @@ import 'package:hmsweb/http/HttpRequest.dart';
 import 'package:hmsweb/patient_appointment/dashboard/dto/PatientAppointmentDoctorDto.dart';
 
 class PatientDashboardApi extends HttpRequest {
+
   Future<Response> fetchDoctorAppointments( {
     required String doctorId,
     required String date,
   }) {
-    return getRequest('api/appointments/slots/1'); //TODO
+    return dioHttpRequest.post('api/appointments/slots/current-day', data: {
+      'date': date,
+      'doctorId': doctorId,
+    });
   }
 
   Future<Response> postPatientAppointment(
     PatientAppointmentDoctorDto patientAppointment,
   ) {
-    return postRequest('api/appointments/register');
+    return dioHttpRequest.post('api/appointments/register', data: {
+      'doctorId': patientAppointment.doctorId,
+      'date': patientAppointment.date,
+      'symptomsDescription': patientAppointment.symptomsDescription,
+      'selfTreatmentMethodsTaken': patientAppointment.selfTreatmentMethodsTaken,
+    });
   }
 
   Future<Response> fetchDoctors() {
-    return postRequest('api/appointments/doctors');
+    return dioHttpRequest.get('api/appointments/doctors');
   }
 }
