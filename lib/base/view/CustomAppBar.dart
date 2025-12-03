@@ -38,7 +38,7 @@ class ToggleButtonsGroup extends StatefulWidget {
 class _ToggleButtonsGroupState extends State<ToggleButtonsGroup> {
 
   int _selectedIndex = 0;
-  final List<String> _buttonTitles = ['Главная', 'Отделения', 'Контакты', 'Запись к врачу', 'Регистрация', 'Авторизация'];
+  final List<String> _buttonTitles = ['Главная', 'Отделения', 'Контакты', 'Запись к врачу'];
 
   void _selectButton(int index) {
 
@@ -68,8 +68,6 @@ class _ToggleButtonsGroupState extends State<ToggleButtonsGroup> {
                     case 1: context.go('/'); break;  // Отделения (добавьте роут, если нужно)
                     case 2: context.go('/'); break;  // Контакты
                     case 3: context.go('/'); break;  // Запись к врачу → регистрация
-                    case 4: context.go('/registration'); break;
-                    case 5: context.go('/login'); break;
                   }
                 },
 //
