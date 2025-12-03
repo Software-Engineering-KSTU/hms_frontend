@@ -45,9 +45,15 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(req -> req
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
-                        .requestMatchers("/api/auth/patient-register","/api/auth/login", "/swagger-ui/index.html", "/v3/api-docs/**",
+                        .requestMatchers(
+                                "/api/auth/patient-register",
+                                "/api/auth/login",
+                                "/swagger-ui/index.html",
+                                "/v3/api-docs/**",
                                 "/swagger-ui/**",
-                                "/swagger-ui.html", "/docs/openapi.yml").permitAll()
+                                "/swagger-ui.html",
+                                "/docs/openapi.yml").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/departments").permitAll()
                         .requestMatchers("/api/cards/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers("/api/cards/blocking/**").hasAuthority(Role.ADMIN.name())
                         .requestMatchers("/api/auth/doctor-register").hasAuthority(Role.ADMIN.name())
