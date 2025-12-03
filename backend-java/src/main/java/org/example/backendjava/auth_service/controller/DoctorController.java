@@ -1,0 +1,20 @@
+package org.example.backendjava.auth_service.controller;
+
+import lombok.RequiredArgsConstructor;
+import org.example.backendjava.auth_service.model.dto.DoctorResumeDto;
+import org.example.backendjava.auth_service.service.DoctorResumeService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/api/doctors")
+@RequiredArgsConstructor
+public class DoctorController {
+
+    private final DoctorResumeService doctorResumeService;
+
+    @GetMapping("/{id}/resume")
+    public ResponseEntity<DoctorResumeDto> getDoctorResume(@PathVariable Long id) {
+        return ResponseEntity.ok(doctorResumeService.getResume(id));
+    }
+}
