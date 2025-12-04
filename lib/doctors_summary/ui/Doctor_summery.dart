@@ -82,15 +82,52 @@ class DoctorSummary extends StatelessWidget {
                       const SizedBox(height: 14),
 
                       Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Icon(Icons.school, color: Colors.blue.shade600),
                           const SizedBox(width: 8),
-                          const Expanded(
-                            child: Text(
-                              "Окончил Кыргызско-Российский Славянский университет по специальности «Лечебное дело».",
-                              style: TextStyle(fontSize: 18),
+
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  "Окончил Кыргызско-Российский Славянский университет по специальности «Лечебное дело».",
+                                  style: TextStyle(fontSize: 18),
+                                ),
+
+                                const SizedBox(height: 6),
+
+                                InkWell(
+                                  onTap: () {
+                                    showDialog(
+                                      context: context,
+                                      builder: (_) => Dialog(
+                                        shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(16)),
+                                        child: ClipRRect(
+                                          borderRadius: BorderRadius.circular(16),
+                                          child: Image.asset(
+                                            "assets/images/diplom.jpg",
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Text(
+                                    "Смотреть сертификат",
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: Colors.blue.shade600,
+                                      decoration: TextDecoration.underline,
+                                      decorationColor: Colors.blue,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
-                          ),
+                          )
                         ],
                       ),
 
