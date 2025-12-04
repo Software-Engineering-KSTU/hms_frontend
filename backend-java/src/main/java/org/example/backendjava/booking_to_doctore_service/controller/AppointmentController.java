@@ -27,9 +27,9 @@ public class AppointmentController {
         return ResponseEntity.ok("Appointment registered with ID: " + appointment.getId());
     }
 
-    @GetMapping("/doctor/{id}")
-    public ResponseEntity<List<DoctorAppiontmentResponseDto>> getDoctorAppointments(@PathVariable Long id) {
-        return ResponseEntity.ok(appointmentService.getAppointmentsForDoctor(id));
+    @GetMapping("/doctor")
+    public ResponseEntity<List<DoctorAppiontmentResponseDto>> getDoctorAppointments() {
+        return ResponseEntity.ok(appointmentService.getAppointmentsForDoctor());
     }
 
     @GetMapping("/doctor/by-status/{status}")

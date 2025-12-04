@@ -21,6 +21,7 @@ import org.example.backendjava.booking_to_doctore_service.model.entity.Appointme
 import org.example.backendjava.booking_to_doctore_service.model.entity.AppointmentStatus;
 import org.example.backendjava.booking_to_doctore_service.model.entity.CurrentPatientStatus;
 import org.example.backendjava.booking_to_doctore_service.repository.AppointmentRepository;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -69,8 +70,12 @@ public class AppointmentService {
     }
 
     @Transactional(readOnly = true)
-    public List<DoctorAppiontmentResponseDto> getAppointmentsForDoctor(Long doctorId) {
-        return appointmentRepository.findByDoctorId(doctorId)
+    public List<DoctorAppiontmentResponseDto> getAppointmentsForDoctor() {
+        String username =  SecurityContextHolder.getContext().getAuthentication().getName();
+        Long userId = userRepository.findIdByUsername(username);
+        Doctor doctorId = doctorRepository.findByUserId(userId).orElseThrow(() -> new DoctorNotFoundException("Doctor with id: " + userId + " not found"));
+
+        return appointmentRepository.findByDoctorId(doctorId.getId())
                 .stream()
                 .map(appointmentMapper::toDto)
                 .toList();

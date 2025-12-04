@@ -1,6 +1,7 @@
 package org.example.backendjava.auth_service.repository;
 
 import org.example.backendjava.auth_service.model.entity.Doctor;
+import org.example.backendjava.auth_service.model.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -17,4 +18,6 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
      * @return Optional с профилем врача
      */
     Optional<Doctor> findByUserId(Long userId);
+
+    Long user(User user);
 }

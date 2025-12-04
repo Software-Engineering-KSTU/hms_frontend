@@ -5,6 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.example.backendjava.auth_service.model.entity.DoctorResume;
 
 import java.time.LocalDate;
 
@@ -20,11 +21,14 @@ public class Doctor {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @OneToOne(mappedBy = "doctor")
+    private DoctorResume resume;
+
     @OneToOne
     @JoinColumn(name = "user_id")
     private User user;
+
     private String specialization;
     private String phoneNumber;
     private LocalDate birthDate;
 }
-
