@@ -18,7 +18,7 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController phoneNumberController = TextEditingController();
   final TextEditingController addressController = TextEditingController();
   final TextEditingController dateOfBirthController = TextEditingController();
-
+//as
   // Ошибки для каждого поля
   String? usernameError;
   String? emailError;
