@@ -7,23 +7,19 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   @override
   Widget build(BuildContext context) {
-    // В AppBar лучше использовать FlexibleSpaceBar или просто Row для гибкости
     return AppBar(
       title: Row(
-        // Используем Expanded вместо Spacer для лучшего контроля в AppBar
         children: [
-          // Title не должен быть обернут в Title(color:...), используйте просто Text
           const Text(
             "HMS",
             style: TextStyle(
                 color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
           ),
 
-          const SizedBox(width: 24), // Небольшой отступ
+          const SizedBox(width: 24),
 
           const ToggleButtonsGroup(),
 
-          // Spacer для того, чтобы сдвинуть кнопки влево, если нужно
           const Spacer(flex: 5),
         ],
       ),
@@ -56,11 +52,7 @@ class _ToggleButtonsGroupState extends State<ToggleButtonsGroup> {
       _selectedIndex = index;
     });
 
-    // ----------------------------------------------------
-    // FIX: Навигацию нужно отложить до завершения текущего кадра
-    // ----------------------------------------------------
     SchedulerBinding.instance.addPostFrameCallback((_) {
-      // Проверяем, что виджет все еще в дереве (mounted) перед навигацией
       if (!mounted) return;
 
       final String targetPath;
@@ -69,7 +61,7 @@ class _ToggleButtonsGroupState extends State<ToggleButtonsGroup> {
           targetPath = '/';
           break; // Главная → /
         case 1:
-          targetPath = '/departments'; // Предполагаемый роут для отделений
+          targetPath = '/departments'; // Отделений
           break;
         case 2:
           targetPath = '/contacts';

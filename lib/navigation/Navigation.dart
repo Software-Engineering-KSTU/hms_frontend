@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hmsweb/%20clinic_contact_info/ui/ContactsModel.dart';
+import 'package:hmsweb/%20clinic_contact_info/ui/ContactsScreen.dart';
 import 'package:hmsweb/base/BaseScreenModel.dart';
 import 'package:hmsweb/base/view/CustomAppBar.dart';
 import 'package:hmsweb/home/ui/HomeModel.dart';
@@ -16,17 +18,15 @@ import '../doctor_appointment/dashboard/ui/DoctorDashboardScreenModel.dart';
 import '../patient_appointment/dashboard/ui/PatientDashboardScreen.dart';
 import '../patient_appointment/dashboard/ui/PatientDashboardScreenModel.dart';
 
-// Измененная сигнатура: теперь createModel принимает GoRouterState
 GoRoute buildRoute<T extends BaseScreenModel>({
   required String path,
   required Widget screen,
-  // T Function(GoRouterState state)
   required T Function(GoRouterState state) createModel,
 }) {
   return GoRoute(
     path: path,
     builder: (context, state) {
-      // Передаем state при вызове
+
       final model = createModel(state);
       model.initialize();
 
@@ -92,6 +92,12 @@ final GoRouter router = GoRouter(
             path: '/',
             screen: HomeScreen(),
             createModel: (state) => HomeModel()
+        ),
+
+        buildRoute(
+            path: '/contacts',
+            screen: ContactsScreen(),
+            createModel: (state) => ContactsModel()
         ),
       ],
     ),
