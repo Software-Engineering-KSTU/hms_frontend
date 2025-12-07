@@ -25,6 +25,7 @@ GoRoute buildRoute<T extends BaseScreenModel>({
   required String path,
   required Widget screen,
   required T Function(GoRouterState state) createModel,
+  required bool useTransition,
 }) {
   return GoRoute(
     path: path,
@@ -47,16 +48,16 @@ final GoRouter router = GoRouter(
   },
   routes: [
     buildRoute(
-      path: '/doctor/dashboard',
-      screen: DoctorDashboardScreen(),
-      createModel: (state) => DoctorDashboardScreenModel(),
-    ),
+        path: '/doctor/dashboard',
+        useTransition: true,
+        screen: DoctorDashboardScreen(),
+        createModel: (state) => DoctorDashboardScreenModel()),
 
     buildRoute(
-      path: '/patient/doctors',
-      screen: DoctorListScreen(),
-      createModel: (state) => DoctorListScreenModel(),
-    ),
+        path: '/patient/doctors',
+        useTransition: true,
+        screen: DoctorListScreen(),
+        createModel: (state) => DoctorListScreenModel()),
 
     GoRoute(
       path: '/patient/dashboard',
@@ -64,6 +65,7 @@ final GoRouter router = GoRouter(
       routes: [
         buildRoute<PatientDashboardScreenModel>(
           path: ':doctorId',
+          useTransition: true,
           screen: PatientDashboardScreen(),
           createModel: (state) {
             final doctorId = state.pathParameters['doctorId'];
@@ -75,12 +77,14 @@ final GoRouter router = GoRouter(
 
     buildRoute(
       path: '/login',
+      useTransition: true,
       screen: LoginScreen(),
       createModel: (sate) => AuthModel(),
     ),
 
     buildRoute(
       path: '/registration',
+      useTransition: true,
       screen: RegistrationScreen(),
       createModel: (state) => AuthModel(),
     ),
@@ -93,19 +97,24 @@ final GoRouter router = GoRouter(
 
     ShellRoute(
       builder: (context, state, child) {
-        return Scaffold(appBar: const CustomAppBar(), body: child);
+        return Scaffold(
+          appBar: const CustomAppBar(),
+          body: child,
+        );
       },
       routes: [
         buildRoute(
-          path: '/',
-          screen: HomeScreen(),
-          createModel: (state) => HomeModel(),
+            path: '/',
+            useTransition: false,
+            screen: HomeScreen(),
+            createModel: (state) => HomeModel()
         ),
 
         buildRoute(
-          path: '/contacts',
-          screen: ContactsScreen(),
-          createModel: (state) => ContactsModel(),
+            path: '/contacts',
+            useTransition: false,
+            screen: ContactsScreen(),
+            createModel: (state) => ContactsModel()
         ),
       ],
     ),

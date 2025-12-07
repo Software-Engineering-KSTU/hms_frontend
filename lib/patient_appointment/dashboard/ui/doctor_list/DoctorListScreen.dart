@@ -15,36 +15,38 @@ class DoctorListScreenState
     extends BaseScreen<DoctorListScreen, DoctorListScreenModel> {
   @override
   Widget buildBody(BuildContext context, DoctorListScreenModel viewModel) {
-    return Builder(
-      builder: (context) {
-        if (viewModel.isLoading) {
-          return const Center(child: CircularProgressIndicator());
-        } else {
-          return Center(
-            child: Container(
-              constraints: const BoxConstraints(
-                maxWidth: 400,
-                maxHeight: 600,
-              ),
-              child: ListView.builder(
-                itemCount: viewModel.doctors.length,
-                itemBuilder: (context, index) {
-                  final doctor = viewModel.doctors[index];
-                  return Card(
-                      child: ListTile(
-                        onTap: () {
-                          context.push('/patient/dashboard/${doctor.doctorId}');
-                        },
-                        title: Text(doctor.doctorName.toString()),
-                        subtitle: Text(doctor.specialization.toString()),
-                      ),
-                  );
-                },
-              ),
+    return Center(
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+
+          final double availableHeight = constraints.maxHeight;
+          final double listHeight = availableHeight > 750 ? 750 : availableHeight;
+
+          return Container(
+            color: Colors.white,
+            constraints: const BoxConstraints(
+              maxWidth: double.infinity,
+            ),
+            height: listHeight,
+
+            child: ListView.builder(
+              itemCount: viewModel.doctors.length,
+              itemBuilder: (context, index) {
+                final doctor = viewModel.doctors[index];
+                return Card(
+                  child: ListTile(
+                    onTap: () {
+                      context.push('/patient/dashboard/${doctor.doctorId}');
+                    },
+                    title: Text(doctor.doctorName),
+                    subtitle: Text(doctor.specialization),
+                  ),
+                );
+              },
             ),
           );
-        }
-      },
+        },
+      ),
     );
   }
 }
