@@ -92,6 +92,7 @@ final GoRouter router = GoRouter(
     buildRoute(
       path: '/oops',
       screen: Error500Page(),
+      useTransition: true,
       createModel: (state) => ErrorScreenModel(),
     ),
 
