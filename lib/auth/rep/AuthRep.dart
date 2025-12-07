@@ -1,11 +1,10 @@
 import 'package:hmsweb/auth/api/AuthApi.dart';
 import 'package:hmsweb/auth/dto/AuthDto.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:dio/dio.dart';
+import 'package:hmsweb/http/HttpRequest.dart';
 
 class AuthRep {
   final _api = AuthApi();
-  static const storage = FlutterSecureStorage();
 
   Future<AuthDto> patientRegister({
     required String username,
@@ -15,8 +14,6 @@ class AuthRep {
     required String address,
     required String dateOfBirth,
   }) async {
-
-    print("REG DATA → username=$username, email=$email, password=$password, phone=$phoneNumber, address=$address, dob=$dateOfBirth");
 
     try {
       final response = await _api.patientRegister(
@@ -28,8 +25,6 @@ class AuthRep {
         dateOfBirth: dateOfBirth,
       );
 
-      print("SERVER RESPONSE → ${response.data}");
-
       final data = response.data as Map<String, dynamic>;
       final authDto = AuthDto.fromJson(data);
 
@@ -40,7 +35,7 @@ class AuthRep {
       print("SERVER ERROR → ${e.response?.data}");
       print("STATUS CODE → ${e.response?.statusCode}");
       print("DIO MESSAGE → ${e.message}");
-      rethrow; // пробрасываем дальше в AuthModel
+      rethrow;
     }
   }
 
@@ -49,12 +44,8 @@ class AuthRep {
     required String password,
   }) async {
 
-    print("LOGIN DATA → username=$username, password=$password");
-
     try {
       final response = await _api.login(username: username, password: password);
-
-      print("SERVER RESPONSE → ${response.data}");
 
       final data = response.data as Map<String, dynamic>;
       final authDto = AuthDto.fromJson(data);
@@ -70,7 +61,7 @@ class AuthRep {
   }
 
   Future<AuthDto> refreshToken() async {
-    final refreshToken = await storage.read(key: 'refreshToken');
+    final refreshToken = await flutterStorage.read(key: 'refreshToken');
     if (refreshToken == null) throw Exception('Нет токена обновления');
 
     try {
@@ -92,7 +83,7 @@ class AuthRep {
   }
 
   Future<void> _saveTokens(AuthDto authDto) async {
-    await storage.write(key: 'accessToken', value: authDto.accessToken);
-    await storage.write(key: 'refreshToken', value: authDto.refreshToken);
+    await flutterStorage.write(key: 'accessToken', value: authDto.accessToken);
+    await flutterStorage.write(key: 'refreshToken', value: authDto.refreshToken);
   }
 }

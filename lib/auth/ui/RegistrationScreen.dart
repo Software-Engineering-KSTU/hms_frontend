@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:hmsweb/base/BaseScreen.dart';
 import 'package:hmsweb/auth/AuthModel.dart';
 import 'view/RegistrationPage.dart';
-import 'package:provider/provider.dart';
 
 class RegistrationScreen extends StatefulWidget {
   const RegistrationScreen({super.key});
@@ -14,17 +13,19 @@ class RegistrationScreen extends StatefulWidget {
 class _RegistrationScreenState extends BaseScreen<RegistrationScreen, AuthModel> {
   @override
   Widget buildBody(BuildContext context, AuthModel viewModel) {
-    return Container(
-      decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          colors: [Colors.blue, Colors.white],
-          begin: Alignment.topCenter,
-          end: Alignment.bottomCenter,
+    return Material(
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [Colors.blue, Colors.white],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
         ),
-      ),
-      child: Center(
-        child: RegistrationPage(),
-      ),
+        child: Center(
+          child: RegistrationPage(),
+        ),
+      )
     );
   }
 }

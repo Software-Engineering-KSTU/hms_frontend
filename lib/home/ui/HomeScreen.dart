@@ -53,7 +53,9 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
                     SizedBox(height: 15),
 
                     ElevatedButton(
-                      onPressed: () {},
+                      onPressed: () {
+
+                      },
                       child: Text(
                         "Запистаься на прием",
                         style: TextStyle(color: Colors.blue, fontSize: 15),
@@ -71,11 +73,10 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
           child: Column(
             children: [
               const Text('Наши услуги', style: TextStyle(fontSize: 18)),
-
               GridView.builder(
                 shrinkWrap: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3, // количество колонок
+                  crossAxisCount: 3,
                   mainAxisSpacing: 16,
                   crossAxisSpacing: 16,
                   childAspectRatio: 6,
@@ -123,7 +124,9 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
                         SizedBox(height: 25),
 
                         ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            viewModel;
+                          },
                           child: Text(
                             "Записаться на прием",
                             style: TextStyle(
@@ -137,10 +140,9 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
                   ),
                 ),
 
-                // Картинка (фиксированная ширина)
                 Image.asset(
                   'assets/images/doctor.jpg',
-                  height: 600, // Задайте фиксированную высоту!
+                  height: 600,
                   width: 400,
                   fit: BoxFit.cover,
                 ),
