@@ -1,6 +1,7 @@
 import 'package:hmsweb/doctor_appointment/dashboard/ui/view/StatusRegistration.dart';
 import 'package:hmsweb/patient_appointment/dashboard/api/PatientDashboardApi.dart';
 import 'package:hmsweb/patient_appointment/dashboard/dto/DoctorInfoDto.dart';
+import 'package:intl/intl.dart';
 import 'package:hmsweb/patient_appointment/dashboard/dto/PatientAppointmentDoctorDto.dart'
     show PatientAppointmentDoctorDto;
 
@@ -46,6 +47,7 @@ class PatientDashboardRep {
     final patientAppointmentWithFormat = PatientAppointmentDoctorDto(
       doctorId: patientAppointment.doctorId,
       date: patientAppointment.date,
+      time: patientAppointment.time,
       symptomsDescription: patientAppointment.symptomsDescription,
       selfTreatmentMethodsTaken: patientAppointment.selfTreatmentMethodsTaken,
     );
@@ -87,27 +89,21 @@ String getTime(String iso) {
   return time;
 }
 
-String getDateBackendFormat({
+String getDate({
   required DateTime dataTime,
-  required String time,
 }) {
-  int hour = int.parse(time.split(":")[0]);
-  int minute = int.parse(time.split(":")[1]);
-
   DateTime result = DateTime(
     dataTime.year,
     dataTime.month,
     dataTime.day,
-    hour,
-    minute,
   );
 
-  String iso = "${result.toIso8601String()}Z";
+  final formatted = DateFormat('yyyy-MM-dd').format(result);
 
-  return iso;
+  return formatted;
 }
 
-String getDateFromBaseDateTime(DateTime dateTime) {
+String getDateFromDateTime(DateTime dateTime) {
   final year = dateTime.year.toString();
   final month = dateTime.month.toString().padLeft(2, '0');
   final day = dateTime.day.toString().padLeft(2, '0');

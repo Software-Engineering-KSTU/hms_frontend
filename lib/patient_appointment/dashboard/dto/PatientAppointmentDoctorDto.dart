@@ -9,6 +9,7 @@ abstract class PatientAppointmentDoctorDto with _$PatientAppointmentDoctorDto {
   const factory PatientAppointmentDoctorDto({
     required String doctorId,
     required String date,
+    required String time,
     required String symptomsDescription,
     required String selfTreatmentMethodsTaken
   }) = _PatientAppointmentDoctorDto;

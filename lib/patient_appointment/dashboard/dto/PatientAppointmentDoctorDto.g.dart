@@ -11,6 +11,7 @@ _PatientAppointmentDoctorDto _$PatientAppointmentDoctorDtoFromJson(
 ) => _PatientAppointmentDoctorDto(
   doctorId: json['doctorId'] as String,
   date: json['date'] as String,
+  time: json['time'] as String,
   symptomsDescription: json['symptomsDescription'] as String,
   selfTreatmentMethodsTaken: json['selfTreatmentMethodsTaken'] as String,
 );
@@ -20,6 +21,7 @@ Map<String, dynamic> _$PatientAppointmentDoctorDtoToJson(
 ) => <String, dynamic>{
   'doctorId': instance.doctorId,
   'date': instance.date,
+  'time': instance.time,
   'symptomsDescription': instance.symptomsDescription,
   'selfTreatmentMethodsTaken': instance.selfTreatmentMethodsTaken,
 };

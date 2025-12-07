@@ -73,7 +73,6 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
           child: Column(
             children: [
               const Text('Наши услуги', style: TextStyle(fontSize: 18)),
-
               GridView.builder(
                 shrinkWrap: true,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(

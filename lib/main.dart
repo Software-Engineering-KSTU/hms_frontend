@@ -10,7 +10,9 @@ void main() async {
 
   runApp(const MyApp());
 
-  await flutterStorage.write(key: 'accessToken', value: 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhbGl5YS5zYWdhdCIsImlhdCI6MTc2NDc5MzQ1MywiZXhwIjoxNzY1Mzk4MjUzfQ.2Gtw-JGevz4oCcPTBgAyc_uwHW6nmerhQL6MOAk5ZOqj2Fc7PmbLLkf8sD5ViWc26jWS70Cr3sWjEYYZlK1sMw');
+  final token = await flutterStorage.read(key: 'accessToken');
+
+  print('main token: $token');
 
 }
 

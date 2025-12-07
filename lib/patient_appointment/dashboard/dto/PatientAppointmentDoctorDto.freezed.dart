@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$PatientAppointmentDoctorDto {
 
- String get doctorId; String get date; String get symptomsDescription; String get selfTreatmentMethodsTaken;
+ String get doctorId; String get date; String get time; String get symptomsDescription; String get selfTreatmentMethodsTaken;
 /// Create a copy of PatientAppointmentDoctorDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $PatientAppointmentDoctorDtoCopyWith<PatientAppointmentDoctorDto> get copyWith =
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is PatientAppointmentDoctorDto&&(identical(other.doctorId, doctorId) || other.doctorId == doctorId)&&(identical(other.date, date) || other.date == date)&&(identical(other.symptomsDescription, symptomsDescription) || other.symptomsDescription == symptomsDescription)&&(identical(other.selfTreatmentMethodsTaken, selfTreatmentMethodsTaken) || other.selfTreatmentMethodsTaken == selfTreatmentMethodsTaken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is PatientAppointmentDoctorDto&&(identical(other.doctorId, doctorId) || other.doctorId == doctorId)&&(identical(other.date, date) || other.date == date)&&(identical(other.time, time) || other.time == time)&&(identical(other.symptomsDescription, symptomsDescription) || other.symptomsDescription == symptomsDescription)&&(identical(other.selfTreatmentMethodsTaken, selfTreatmentMethodsTaken) || other.selfTreatmentMethodsTaken == selfTreatmentMethodsTaken));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,doctorId,date,symptomsDescription,selfTreatmentMethodsTaken);
+int get hashCode => Object.hash(runtimeType,doctorId,date,time,symptomsDescription,selfTreatmentMethodsTaken);
 
 @override
 String toString() {
-  return 'PatientAppointmentDoctorDto(doctorId: $doctorId, date: $date, symptomsDescription: $symptomsDescription, selfTreatmentMethodsTaken: $selfTreatmentMethodsTaken)';
+  return 'PatientAppointmentDoctorDto(doctorId: $doctorId, date: $date, time: $time, symptomsDescription: $symptomsDescription, selfTreatmentMethodsTaken: $selfTreatmentMethodsTaken)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $PatientAppointmentDoctorDtoCopyWith<$Res>  {
   factory $PatientAppointmentDoctorDtoCopyWith(PatientAppointmentDoctorDto value, $Res Function(PatientAppointmentDoctorDto) _then) = _$PatientAppointmentDoctorDtoCopyWithImpl;
 @useResult
 $Res call({
- String doctorId, String date, String symptomsDescription, String selfTreatmentMethodsTaken
+ String doctorId, String date, String time, String symptomsDescription, String selfTreatmentMethodsTaken
 });
 
 
@@ -65,10 +65,11 @@ class _$PatientAppointmentDoctorDtoCopyWithImpl<$Res>
 
 /// Create a copy of PatientAppointmentDoctorDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? doctorId = null,Object? date = null,Object? symptomsDescription = null,Object? selfTreatmentMethodsTaken = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? doctorId = null,Object? date = null,Object? time = null,Object? symptomsDescription = null,Object? selfTreatmentMethodsTaken = null,}) {
   return _then(_self.copyWith(
 doctorId: null == doctorId ? _self.doctorId : doctorId // ignore: cast_nullable_to_non_nullable
 as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
 as String,symptomsDescription: null == symptomsDescription ? _self.symptomsDescription : symptomsDescription // ignore: cast_nullable_to_non_nullable
 as String,selfTreatmentMethodsTaken: null == selfTreatmentMethodsTaken ? _self.selfTreatmentMethodsTaken : selfTreatmentMethodsTaken // ignore: cast_nullable_to_non_nullable
 as String,
@@ -156,10 +157,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String doctorId,  String date,  String symptomsDescription,  String selfTreatmentMethodsTaken)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String doctorId,  String date,  String time,  String symptomsDescription,  String selfTreatmentMethodsTaken)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _PatientAppointmentDoctorDto() when $default != null:
-return $default(_that.doctorId,_that.date,_that.symptomsDescription,_that.selfTreatmentMethodsTaken);case _:
+return $default(_that.doctorId,_that.date,_that.time,_that.symptomsDescription,_that.selfTreatmentMethodsTaken);case _:
   return orElse();
 
 }
@@ -177,10 +178,10 @@ return $default(_that.doctorId,_that.date,_that.symptomsDescription,_that.selfTr
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String doctorId,  String date,  String symptomsDescription,  String selfTreatmentMethodsTaken)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String doctorId,  String date,  String time,  String symptomsDescription,  String selfTreatmentMethodsTaken)  $default,) {final _that = this;
 switch (_that) {
 case _PatientAppointmentDoctorDto():
-return $default(_that.doctorId,_that.date,_that.symptomsDescription,_that.selfTreatmentMethodsTaken);case _:
+return $default(_that.doctorId,_that.date,_that.time,_that.symptomsDescription,_that.selfTreatmentMethodsTaken);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -197,10 +198,10 @@ return $default(_that.doctorId,_that.date,_that.symptomsDescription,_that.selfTr
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String doctorId,  String date,  String symptomsDescription,  String selfTreatmentMethodsTaken)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String doctorId,  String date,  String time,  String symptomsDescription,  String selfTreatmentMethodsTaken)?  $default,) {final _that = this;
 switch (_that) {
 case _PatientAppointmentDoctorDto() when $default != null:
-return $default(_that.doctorId,_that.date,_that.symptomsDescription,_that.selfTreatmentMethodsTaken);case _:
+return $default(_that.doctorId,_that.date,_that.time,_that.symptomsDescription,_that.selfTreatmentMethodsTaken);case _:
   return null;
 
 }
@@ -212,11 +213,12 @@ return $default(_that.doctorId,_that.date,_that.symptomsDescription,_that.selfTr
 @JsonSerializable()
 
 class _PatientAppointmentDoctorDto implements PatientAppointmentDoctorDto {
-  const _PatientAppointmentDoctorDto({required this.doctorId, required this.date, required this.symptomsDescription, required this.selfTreatmentMethodsTaken});
+  const _PatientAppointmentDoctorDto({required this.doctorId, required this.date, required this.time, required this.symptomsDescription, required this.selfTreatmentMethodsTaken});
   factory _PatientAppointmentDoctorDto.fromJson(Map<String, dynamic> json) => _$PatientAppointmentDoctorDtoFromJson(json);
 
 @override final  String doctorId;
 @override final  String date;
+@override final  String time;
 @override final  String symptomsDescription;
 @override final  String selfTreatmentMethodsTaken;
 
@@ -233,16 +235,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PatientAppointmentDoctorDto&&(identical(other.doctorId, doctorId) || other.doctorId == doctorId)&&(identical(other.date, date) || other.date == date)&&(identical(other.symptomsDescription, symptomsDescription) || other.symptomsDescription == symptomsDescription)&&(identical(other.selfTreatmentMethodsTaken, selfTreatmentMethodsTaken) || other.selfTreatmentMethodsTaken == selfTreatmentMethodsTaken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _PatientAppointmentDoctorDto&&(identical(other.doctorId, doctorId) || other.doctorId == doctorId)&&(identical(other.date, date) || other.date == date)&&(identical(other.time, time) || other.time == time)&&(identical(other.symptomsDescription, symptomsDescription) || other.symptomsDescription == symptomsDescription)&&(identical(other.selfTreatmentMethodsTaken, selfTreatmentMethodsTaken) || other.selfTreatmentMethodsTaken == selfTreatmentMethodsTaken));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,doctorId,date,symptomsDescription,selfTreatmentMethodsTaken);
+int get hashCode => Object.hash(runtimeType,doctorId,date,time,symptomsDescription,selfTreatmentMethodsTaken);
 
 @override
 String toString() {
-  return 'PatientAppointmentDoctorDto(doctorId: $doctorId, date: $date, symptomsDescription: $symptomsDescription, selfTreatmentMethodsTaken: $selfTreatmentMethodsTaken)';
+  return 'PatientAppointmentDoctorDto(doctorId: $doctorId, date: $date, time: $time, symptomsDescription: $symptomsDescription, selfTreatmentMethodsTaken: $selfTreatmentMethodsTaken)';
 }
 
 
@@ -253,7 +255,7 @@ abstract mixin class _$PatientAppointmentDoctorDtoCopyWith<$Res> implements $Pat
   factory _$PatientAppointmentDoctorDtoCopyWith(_PatientAppointmentDoctorDto value, $Res Function(_PatientAppointmentDoctorDto) _then) = __$PatientAppointmentDoctorDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String doctorId, String date, String symptomsDescription, String selfTreatmentMethodsTaken
+ String doctorId, String date, String time, String symptomsDescription, String selfTreatmentMethodsTaken
 });
 
 
@@ -270,10 +272,11 @@ class __$PatientAppointmentDoctorDtoCopyWithImpl<$Res>
 
 /// Create a copy of PatientAppointmentDoctorDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? doctorId = null,Object? date = null,Object? symptomsDescription = null,Object? selfTreatmentMethodsTaken = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? doctorId = null,Object? date = null,Object? time = null,Object? symptomsDescription = null,Object? selfTreatmentMethodsTaken = null,}) {
   return _then(_PatientAppointmentDoctorDto(
 doctorId: null == doctorId ? _self.doctorId : doctorId // ignore: cast_nullable_to_non_nullable
 as String,date: null == date ? _self.date : date // ignore: cast_nullable_to_non_nullable
+as String,time: null == time ? _self.time : time // ignore: cast_nullable_to_non_nullable
 as String,symptomsDescription: null == symptomsDescription ? _self.symptomsDescription : symptomsDescription // ignore: cast_nullable_to_non_nullable
 as String,selfTreatmentMethodsTaken: null == selfTreatmentMethodsTaken ? _self.selfTreatmentMethodsTaken : selfTreatmentMethodsTaken // ignore: cast_nullable_to_non_nullable
 as String,

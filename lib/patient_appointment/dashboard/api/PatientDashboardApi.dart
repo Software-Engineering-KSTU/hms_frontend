@@ -29,7 +29,8 @@ class PatientDashboardApi extends HttpRequest {
     return dioHttpRequest.post('api/appointments/register', data: {
       'doctorId': patientAppointment.doctorId,
       'date': patientAppointment.date,
-      'symptomsDescription': patientAppointment.symptomsDescription,
+      'time': patientAppointment.time,
+      'symptomsDescribedByPatient': patientAppointment.symptomsDescription,
       'selfTreatmentMethodsTaken': patientAppointment.selfTreatmentMethodsTaken,
     });
   }

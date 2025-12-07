@@ -30,6 +30,7 @@ void setUpDioHttpRequest() {
   );
 }
 
+//todo deprecated
 class HttpRequest {
   late final Dio dio;
 
@@ -78,6 +79,9 @@ class AuthInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     final token = await flutterStorage.read(key: 'accessToken');
+
+    print('Interceptor token: $token');
+
 
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';

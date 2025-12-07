@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hmsweb/base/BaseScreen.dart';
 import 'package:hmsweb/doctor_appointment/dashboard/ui/view/TimeSlotsWidget.dart';
+import 'package:hmsweb/patient_appointment/dashboard/rep/PatientDashboardRep.dart' show getDateFromDateTime;
 import 'package:hmsweb/patient_appointment/dashboard/ui/view/BookTimeDialog.dart';
 import 'package:table_calendar/table_calendar.dart';
 
@@ -37,6 +38,8 @@ class PatientDashboardScreenState
                   viewModel.selectedDay = selected;
                   viewModel.focusedDay = focused;
                 });
+
+                viewModel.setDoctorAppointmentsUi(selected);
               },
               headerStyle: HeaderStyle(
                 titleCentered: true,

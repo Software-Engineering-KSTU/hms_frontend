@@ -21,14 +21,61 @@ class PatientDashboardScreenModel extends BaseScreenModel {
   @override
   Future<void> onInitialization() async {
     final currentDate = DateTime.now();
-    final date = getDateFromBaseDateTime(currentDate);
+    final date = getDateFromDateTime(currentDate);
 
-    final doctorAppointment = await _rep.getDoctorAppointments(
-      doctorId: idDoctor,
-      date: date,
-    );
+    status.addAll(await setDoctorAppointments(idDoctor, date));
+  }
 
-    status.addAll(doctorAppointment);
+  Future<Map<String, StatusRegistration>> setDoctorAppointments(
+    String doctorId,
+    String date,
+  ) async {
+    return _rep.getDoctorAppointments(doctorId: doctorId, date: date);
+  }
+
+  void fillAllWithBusyStatus() {
+
+    final List<String> times = [
+      "08:00",
+      "08:20",
+      "08:40",
+      "09:00",
+      "09:20",
+      "09:40",
+      "10:00",
+      "10:20",
+      "10:40",
+      "11:00",
+      "11:20",
+      "11:40",
+      "12:00",
+      "12:20",
+      "12:40",
+      "13:00",
+      "13:20",
+      "13:40",
+    ];
+
+    for (var time in times) {
+      status[time] = StatusRegistration.busy;
+    }
+
+  }
+
+  Future<void> setDoctorAppointmentsUi(DateTime currentDate) async {
+    isLoading = true;
+
+    if(currentDate.isBefore(DateTime.now())) {
+      fillAllWithBusyStatus();
+    } else {
+      status.clear();
+      status.addAll(
+        await setDoctorAppointments(idDoctor, getDateFromDateTime(currentDate)),
+      );
+    }
+
+    isLoading = false;
+    notifyListeners();
   }
 
   bool isNotBusyOrMine(String time) {
@@ -41,10 +88,8 @@ class PatientDashboardScreenModel extends BaseScreenModel {
   void setMineStatusRegistration(String time) async {
     final patientAppointment = PatientAppointmentDoctorDto(
       doctorId: idDoctor,
-      date: getDateBackendFormat(
-        dataTime: selectedDay ?? DateTime.now(),
-        time: time,
-      ),
+      date: getDate(dataTime: selectedDay ?? DateTime.now()),
+      time: time,
       symptomsDescription: symptomsDescription,
       selfTreatmentMethodsTaken: selfTreatmentMethodsTaken,
     );
