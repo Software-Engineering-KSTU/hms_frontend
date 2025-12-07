@@ -10,10 +10,16 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Row(
         children: [
-          const Text(
-            "HMS",
-            style: TextStyle(
-                color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+          TextButton(
+            onPressed: () {
+              context.go('/');
+            },
+            child: const Text(
+                "HMS",
+                style: TextStyle(
+                    color: Colors.black, fontWeight: FontWeight.bold, fontSize: 20),
+              )
+
           ),
 
           const SizedBox(width: 24),
