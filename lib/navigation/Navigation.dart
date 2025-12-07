@@ -22,17 +22,44 @@ GoRoute buildRoute<T extends BaseScreenModel>({
   required String path,
   required Widget screen,
   required T Function(GoRouterState state) createModel,
+  required bool useTransition,
 }) {
   return GoRoute(
     path: path,
-    builder: (context, state) {
+    pageBuilder: (context, state) {
 
       final model = createModel(state);
       model.initialize();
 
-      return ChangeNotifierProvider.value(
+      final child =  ChangeNotifierProvider.value(
         value: model,
         child: screen,
+      );
+
+      if (!useTransition) {
+        return MaterialPage(key: state.pageKey, child: child);
+      }
+
+      return CustomTransitionPage<void>(
+        key: state.pageKey,
+        child: child,
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+
+          const begin = Offset(1.0, 0.0);
+          const end = Offset.zero;
+          const curve = Curves.easeOutCubic;
+
+          var tween = Tween(begin: begin, end: end).chain(
+            CurveTween(curve: curve),
+          );
+
+          return SlideTransition(
+            position: animation.drive(tween),
+            child: child,
+          );
+        },
+        transitionDuration: const Duration(milliseconds: 400),
+        reverseTransitionDuration: const Duration(milliseconds: 300),
       );
     },
   );
@@ -46,11 +73,13 @@ final GoRouter router = GoRouter(
   routes: [
     buildRoute(
         path: '/doctor/dashboard',
+        useTransition: true,
         screen: DoctorDashboardScreen(),
         createModel: (state) => DoctorDashboardScreenModel()),
 
     buildRoute(
         path: '/patient/doctors',
+        useTransition: true,
         screen: DoctorListScreen(),
         createModel: (state) => DoctorListScreenModel()),
 
@@ -60,6 +89,7 @@ final GoRouter router = GoRouter(
       routes: [
         buildRoute<PatientDashboardScreenModel>(
           path: ':doctorId',
+          useTransition: true,
           screen: PatientDashboardScreen(),
           createModel: (state) {
             final doctorId = state.pathParameters['doctorId'];
@@ -71,11 +101,13 @@ final GoRouter router = GoRouter(
 
     buildRoute(
       path: '/login',
+      useTransition: true,
       screen: LoginScreen(),
       createModel: (sate) => AuthModel(),
     ),
     buildRoute(
       path: '/registration',
+      useTransition: true,
       screen: RegistrationScreen(),
       createModel: (state) => AuthModel(),
     ),
@@ -90,12 +122,14 @@ final GoRouter router = GoRouter(
       routes: [
         buildRoute(
             path: '/',
+            useTransition: false,
             screen: HomeScreen(),
             createModel: (state) => HomeModel()
         ),
 
         buildRoute(
             path: '/contacts',
+            useTransition: false,
             screen: ContactsScreen(),
             createModel: (state) => ContactsModel()
         ),
