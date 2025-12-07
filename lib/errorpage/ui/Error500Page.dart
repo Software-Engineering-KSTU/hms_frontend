@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 
 class Error500Page extends StatelessWidget {
   const Error500Page({super.key});
@@ -62,7 +63,9 @@ class Error500Page extends StatelessWidget {
                       SizedBox(
                         width: 250,
                         child: ElevatedButton(
-                          onPressed: () {},
+                          onPressed: () {
+                            context.go('/');
+                          },
                           style: ElevatedButton.styleFrom(
                             padding: const EdgeInsets.symmetric(
                               horizontal: 24,

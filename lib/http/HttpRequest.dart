@@ -80,9 +80,6 @@ class AuthInterceptor extends Interceptor {
   ) async {
     final token = await flutterStorage.read(key: 'accessToken');
 
-    print('Interceptor token: $token');
-
-
     if (token != null) {
       options.headers['Authorization'] = 'Bearer $token';
     }
@@ -99,6 +96,16 @@ class AuthInterceptor extends Interceptor {
         final context = rootNavigatorKey.currentContext!;
 
         context.go('/login');
+      }
+
+      return handler.next(err);
+    }
+
+    if (err.response?.statusCode == 500) {
+      if (rootNavigatorKey.currentContext != null) {
+        final context = rootNavigatorKey.currentContext!;
+
+        context.go('/oops');
       }
 
       return handler.next(err);
