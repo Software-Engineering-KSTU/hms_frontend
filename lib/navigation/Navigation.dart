@@ -121,3 +121,4 @@ final GoRouter router = GoRouter(
     ),
   ],
 );
+

@@ -39,6 +39,8 @@ dev_dependencies:
   json_serializable: ^6.11.1
   intl: ^0.19.0
 
+  mailer: ^6.0.0
+
 flutter:
 
   uses-material-design: true
@@ -46,6 +48,7 @@ flutter:
   assets:
     - assets/images/
     - assets/images/doctor_bg.jpg
+    - assets/images/return_icons.jpg
 
 #web:
 #  initialization:

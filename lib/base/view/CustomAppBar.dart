@@ -182,25 +182,39 @@ class _ToggleButtonsGroupState extends State<ToggleButtonsGroup> {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.start,
-      children: List.generate(_buttonTitles.length, (index) {
-        final bool isActive = index == _selectedIndex;
+    return Center(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: List.generate(_buttonTitles.length, (index) {
+          final bool isActive = index == _selectedIndex;
 
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: TextButton(
-            onPressed: () => _selectButton(index),
-            style: TextButton.styleFrom(
-              backgroundColor: isActive ? Colors.blue.shade100 : Colors.transparent,
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8)),
-            ),
-            child: Text(
-              _buttonTitles[index],
-              style: TextStyle(
-                color: isActive ? Colors.blue.shade800 : Colors.black87,
-                fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+            child: TextButton(
+              // В _ToggleButtonsGroupState, в TextButton:
+                onPressed: () {
+                  _selectButton(index);
+                  switch (index) {
+                    case 0: context.go('/'); break;  // Главная → /
+                    case 1: context.go('/'); break;  // Отделения (добавьте роут, если нужно)
+                    case 2: context.go('/'); break;  // Контакты
+                    case 3: context.go('/'); break;  // Запись к врачу → регистрация
+                  }
+                },
+//
+              style: TextButton.styleFrom(
+                backgroundColor: isActive
+                    ? Colors.blue.shade100
+                    : Colors.transparent,
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8)),
+              ),
+              child: Text(
+                _buttonTitles[index],
+                style: TextStyle(
+                  color: isActive ? Colors.blue.shade800 : Colors.black87,
+                  fontWeight: isActive ? FontWeight.bold : FontWeight.normal,
+                ),
               ),
             ),
           ),

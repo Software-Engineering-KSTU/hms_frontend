@@ -20,7 +20,6 @@ const UserRole currentUserRole = UserRole.PATIENT; // Сейчас мы имит
 
 
 class HomeScreen extends StatefulWidget {
-
   @override
   _HomeScreenState createState() => _HomeScreenState();
 }
@@ -116,13 +115,14 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
 
   @override
   Widget buildBody(BuildContext context, HomeModel viewModel) {
-    return SingleChildScrollView( // Заменил Column на SingleChildScrollView, чтобы избежать ошибок переполнения
+    // ДОБАВЛЕНО: SingleChildScrollView, чтобы страница могла скроллиться
+    return SingleChildScrollView(
       child: Column(
         children: [
+          // 1. ГЛАВНЫЙ БАННЕР
           SizedBox(
             width: double.infinity,
             height: 600,
-
             child: Stack(
               alignment: Alignment.centerLeft,
               children: [
@@ -132,40 +132,29 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
                   height: double.infinity,
                   width: double.infinity,
                 ),
-
                 Container(color: Colors.black54),
-
                 Positioned(
                   left: 150,
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
+                      const Text(
                         'Центр медецинснской \nпомощи',
                         style: TextStyle(fontSize: 30, color: Colors.white),
                       ),
-
-                      SizedBox(height: 25),
-
-                      Text(
+                      const SizedBox(height: 25),
+                      const Text(
                         'Ваше здоровье - наша забота !',
                         style: TextStyle(fontSize: 15, color: Colors.white),
                       ),
-
-                      SizedBox(height: 15),
-
-                      // --- ИЗМЕНЁННЫЙ БЛОК: КНОПКИ ---
-                      Row(
-                        children: [
-                          _buildRoleSpecificButtons(context),
-                          // Кнопку "Профиль" по твоему запросу на крайнем боку
-                          // лучше разместить в CustomAppBar, но для демонстрации 
-                          // я добавляю её тут
-                          _buildProfileButton(context),
-                        ],
+                      const SizedBox(height: 15),
+                      ElevatedButton(
+                        onPressed: () {},
+                        child: const Text(
+                          "Запистаься на прием",
+                          style: TextStyle(color: Colors.blue, fontSize: 15),
+                        ),
                       ),
-                      // --- КОНЕЦ ИЗМЕНЁННОГО БЛОКА ---
-
                     ],
                   ),
                 ),
@@ -173,15 +162,17 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
             ),
           ),
 
+          // 2. СПИСОК УСЛУГ (GRID)
           Padding(
             padding: const EdgeInsets.all(20.0),
             child: Column(
               children: [
                 const Text('Наши услуги', style: TextStyle(fontSize: 18)),
+                const SizedBox(height: 20),
                 GridView.builder(
-                  // ... (Остальной код GridView)
-                  shrinkWrap: true,
-                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  shrinkWrap: true, // Важно: позволяет GridView работать внутри ScrollView
+                  physics: const NeverScrollableScrollPhysics(), // Отключаем собственный скролл сетки
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 3,
                     mainAxisSpacing: 16,
                     crossAxisSpacing: 16,
@@ -197,11 +188,12 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
             ),
           ),
 
+          // 3. БЛОК "ДОБРО ПОЖАЛОВАТЬ"
           Padding(
-            padding: EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             child: Container(
               width: double.infinity,
-              color: Color(0x101C9AEA),
+              color: const Color(0x101C9AEA),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -213,54 +205,36 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
                         children: [
                           const Text(
                             "Добро пожаловать!",
-                            style: TextStyle(fontSize: 30, color: Colors
-                                .blueAccent),
+                            style: TextStyle(fontSize: 30, color: Colors.blueAccent),
                           ),
-                          Text(
+                          const SizedBox(height: 15),
+                          const Text(
                               '''Здоровье - это самое важное и ценное, что у нас есть. Это основа для достижения всех наших мечт и целей в жизни. Не откладывайте заботу о себе и свих близких на потом. Сегодня - лучшее время начать заботиться о себе и своей семье.
-  
-  В нашей медицинской клинике мы готовы помочь вам на этом пути к благополучию и процветанию. Наши врачи и медицинский персонал обладают высокой квалификацией и опытом, мы предоставляем широкий спектр медицинских услуг для удовлетворения ваших потребностей.
-  
-  Не ждите, пока заболеете или проблемы ухудшатся. Запишитесь на прием уже сегодня, позвольте себе заботиться о самом важном - о себе и своих родных.
-  
-  Сделайте шаг к более здоровой, счастливой и активной жизни. Вместе мы сделаем это возможным! Запишитесь на прием прямо сейчас и уделите себе заслуженное внимание и заботу!''',
+
+В нашей медицинской клинике мы готовы помочь вам на этом пути к благополучию и процветанию. Наши врачи и медицинский персонал обладают высокой квалификацией и опытом, мы предоставляем широкий спектр медицинских услуг для удовлетворения ваших потребностей.
+
+Не ждите, пока заболеете или проблемы ухудшатся. Запишитесь на прием уже сегодня, позвольте себе заботиться о самом важном - о себе и своих родных.
+
+Сделайте шаг к более здоровой, счастливой и активной жизни. Вместе мы сделаем это возможным! Запишитесь на прием прямо сейчас и уделите себе заслуженное внимание и заботу!''',
                               style: TextStyle(fontSize: 15)
                           ),
-
-                          SizedBox(height: 25),
-
-                          // --- ИЗМЕНЁННЫЙ БЛОК: КНОПКИ В СЕКЦИИ ---
-                          Row(
-                            children: [
-                              ElevatedButton(
-                                onPressed: () {
-                                  // Используем ту же логику навигации
-                                  if (currentUserRole == UserRole.PATIENT || currentUserRole == UserRole.ADMIN) {
-                                    context.go('/patient/doctors');
-                                  } else if (currentUserRole == UserRole.DOCTOR) {
-                                    context.go('/doctor/dashboard');
-                                  } else {
-                                    // Гость может перейти на логин или регистрацию
-                                    context.go('/login');
-                                  }
-                                },
-                                child: Text(
-                                  currentUserRole == UserRole.DOCTOR ? "Панель доктора" : "Записаться на прием",
-                                  style: TextStyle(
-                                    color: Colors.blue,
-                                    fontSize: 15,
-                                  ),
-                                ),
+                          const SizedBox(height: 25),
+                          ElevatedButton(
+                            onPressed: () {},
+                            child: const Text(
+                              "Записаться на прием",
+                              style: TextStyle(
+                                color: Colors.blue,
+                                fontSize: 15,
                               ),
-                            ],
+                            ),
                           ),
-                          // --- КОНЕЦ ИЗМЕНЁННОГО БЛОКА ---
-
                         ],
                       ),
                     ),
                   ),
 
+                  // Картинка доктора
                   Image.asset(
                     'assets/images/doctor.jpg',
                     height: 600,
@@ -272,11 +246,14 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
             ),
           ),
 
-          WhyUsSection(),
+          // 4. ПОЧЕМУ МЫ
+           WhyUsSection(),
 
-          WebPageWithFooter(),
+          // 5. ФУТЕР
+           WebPageWithFooter(),
         ],
       ),
     );
   }
 }
+//
