@@ -1,9 +1,23 @@
+// fileName: HomeScreen.dart
 import 'package:flutter/material.dart';
 import 'package:hmsweb/base/BaseScreen.dart';
 import 'package:hmsweb/base/view/CustomFooter.dart';
 import 'package:hmsweb/home/ui/view/WhyUsSection.dart';
-
+import 'package:go_router/go_router.dart';
 import 'HomeModel.dart';
+
+// --- НАЧАЛО: ЗАГЛУШКА ДЛЯ РОЛЕЙ ---
+enum UserRole {
+  GUEST, // Не авторизован
+  PATIENT,
+  DOCTOR,
+  ADMIN
+}
+
+// !!! В РЕАЛЬНОМ ПРИЛОЖЕНИИ ЭТА РОЛЬ ДОЛЖНА БРАТЬСЯ ИЗ AuthModel ИЛИ ИЗ ХРАНИЛИЩА !!!
+const UserRole currentUserRole = UserRole.PATIENT; // Сейчас мы имитируем пациента
+// --- КОНЕЦ: ЗАГЛУШКА ДЛЯ РОЛЕЙ ---
+
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -11,6 +25,93 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
+
+  // Функция, которая строит кнопки в зависимости от роли
+  Widget _buildRoleSpecificButtons(BuildContext context) {
+    List<Widget> buttons = [];
+
+    switch (currentUserRole) {
+      case UserRole.PATIENT:
+      // Кнопка для пациента: "Записаться на прием" (ведет на /patient/doctors)
+        buttons.add(
+          ElevatedButton(
+            onPressed: () => context.go('/patient/doctors'),
+            child: Text(
+              "Записаться на прием",
+              style: TextStyle(color: Colors.blue, fontSize: 15),
+            ),
+          ),
+        );
+        break;
+
+      case UserRole.DOCTOR:
+      // Кнопка для доктора: "Панель доктора" (ведет на /doctor/dashboard)
+        buttons.add(
+          ElevatedButton(
+            onPressed: () => context.go('/doctor/dashboard'),
+            child: Text(
+              "Панель доктора",
+              style: TextStyle(color: Colors.blue, fontSize: 15),
+            ),
+          ),
+        );
+        break;
+
+      case UserRole.ADMIN:
+      // Кнопка для админа: "Записаться на прием"
+        buttons.add(
+          ElevatedButton(
+            onPressed: () => context.go('/patient/doctors'),
+            child: Text(
+              "Записаться на прием",
+              style: TextStyle(color: Colors.blue, fontSize: 15),
+            ),
+          ),
+        );
+        // Дополнительная кнопка для админа: "Админ панель"
+        buttons.add(const SizedBox(width: 15));
+        buttons.add(
+          ElevatedButton(
+            onPressed: () {
+              // TODO: context.go('/admin/dashboard');
+            },
+            child: Text(
+              "Админ панель",
+              style: TextStyle(color: Colors.red, fontSize: 15),
+            ),
+          ),
+        );
+        break;
+
+      case UserRole.GUEST:
+      // Гость видит кнопки логина/регистрации, но мы их оставим в AppBar,
+      // а тут пока ничего не отображаем
+        break;
+    }
+
+    return Row(children: buttons);
+  }
+
+  // Функция, которая строит кнопку "Профиль"
+  Widget _buildProfileButton(BuildContext context) {
+    // Отображаем кнопку "Профиль" только если пользователь авторизован
+    if (currentUserRole != UserRole.GUEST) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 15.0),
+        child: ElevatedButton(
+          onPressed: () {
+            // TODO: context.go('/profile'); // Будущий маршрут
+          },
+          child: Text(
+            "Профиль",
+            style: TextStyle(color: Colors.green, fontSize: 15),
+          ),
+        ),
+      );
+    }
+    return const SizedBox.shrink(); // Ничего не показываем, если гость
+  }
+
 
   @override
   Widget buildBody(BuildContext context, HomeModel viewModel) {

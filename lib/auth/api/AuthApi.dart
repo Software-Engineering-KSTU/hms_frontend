@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';  // Если используете dio, как в HomeApi
-import 'package:hmsweb/http/HttpRequest.dart';  // Глобальный HttpRequest
+import 'package:hmsweb/http/HttpRequest.dart';
 
 class AuthApi extends HttpRequest {
 
@@ -12,9 +12,7 @@ class AuthApi extends HttpRequest {
     required String dateOfBirth,
   }) async {
 
-
-
-    return await postRequest('api/auth/patient-register', data: {
+    return await dioHttpRequest.post('api/auth/patient-register', data: {
       'username': username,
       'email': email,
       'password': password,
@@ -28,10 +26,13 @@ class AuthApi extends HttpRequest {
     required String username,
     required String password,
   }) async {
-    return await postRequest('api/auth/login', data: {
-      'username': username,
-      'password': password,
-    });
+    return await dioHttpRequest.post(
+      'api/auth/login',
+      data: {
+        'username': username,
+        'password': password
+      },
+    );
   }
 
   Future<Response> refreshToken(String refreshToken) async {
@@ -40,6 +41,7 @@ class AuthApi extends HttpRequest {
     });
   }
 }
+
 
 
 
