@@ -1,9 +1,23 @@
+// fileName: HomeScreen.dart
 import 'package:flutter/material.dart';
 import 'package:hmsweb/base/BaseScreen.dart';
 import 'package:hmsweb/base/view/CustomFooter.dart';
 import 'package:hmsweb/home/ui/view/WhyUsSection.dart';
-
+import 'package:go_router/go_router.dart';
 import 'HomeModel.dart';
+
+// --- НАЧАЛО: ЗАГЛУШКА ДЛЯ РОЛЕЙ ---
+enum UserRole {
+  GUEST, // Не авторизован
+  PATIENT,
+  DOCTOR,
+  ADMIN
+}
+
+// !!! В РЕАЛЬНОМ ПРИЛОЖЕНИИ ЭТА РОЛЬ ДОЛЖНА БРАТЬСЯ ИЗ AuthModel ИЛИ ИЗ ХРАНИЛИЩА !!!
+const UserRole currentUserRole = UserRole.PATIENT; // Сейчас мы имитируем пациента
+// --- КОНЕЦ: ЗАГЛУШКА ДЛЯ РОЛЕЙ ---
+
 
 class HomeScreen extends StatefulWidget {
 
@@ -13,148 +27,256 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
 
+  // Функция, которая строит кнопки в зависимости от роли
+  Widget _buildRoleSpecificButtons(BuildContext context) {
+    List<Widget> buttons = [];
+
+    switch (currentUserRole) {
+      case UserRole.PATIENT:
+      // Кнопка для пациента: "Записаться на прием" (ведет на /patient/doctors)
+        buttons.add(
+          ElevatedButton(
+            onPressed: () => context.go('/patient/doctors'),
+            child: Text(
+              "Записаться на прием",
+              style: TextStyle(color: Colors.blue, fontSize: 15),
+            ),
+          ),
+        );
+        break;
+
+      case UserRole.DOCTOR:
+      // Кнопка для доктора: "Панель доктора" (ведет на /doctor/dashboard)
+        buttons.add(
+          ElevatedButton(
+            onPressed: () => context.go('/doctor/dashboard'),
+            child: Text(
+              "Панель доктора",
+              style: TextStyle(color: Colors.blue, fontSize: 15),
+            ),
+          ),
+        );
+        break;
+
+      case UserRole.ADMIN:
+      // Кнопка для админа: "Записаться на прием"
+        buttons.add(
+          ElevatedButton(
+            onPressed: () => context.go('/patient/doctors'),
+            child: Text(
+              "Записаться на прием",
+              style: TextStyle(color: Colors.blue, fontSize: 15),
+            ),
+          ),
+        );
+        // Дополнительная кнопка для админа: "Админ панель"
+        buttons.add(const SizedBox(width: 15));
+        buttons.add(
+          ElevatedButton(
+            onPressed: () {
+              // TODO: context.go('/admin/dashboard');
+            },
+            child: Text(
+              "Админ панель",
+              style: TextStyle(color: Colors.red, fontSize: 15),
+            ),
+          ),
+        );
+        break;
+
+      case UserRole.GUEST:
+      // Гость видит кнопки логина/регистрации, но мы их оставим в AppBar,
+      // а тут пока ничего не отображаем
+        break;
+    }
+
+    return Row(children: buttons);
+  }
+
+  // Функция, которая строит кнопку "Профиль"
+  Widget _buildProfileButton(BuildContext context) {
+    // Отображаем кнопку "Профиль" только если пользователь авторизован
+    if (currentUserRole != UserRole.GUEST) {
+      return Padding(
+        padding: const EdgeInsets.only(left: 15.0),
+        child: ElevatedButton(
+          onPressed: () {
+            // TODO: context.go('/profile'); // Будущий маршрут
+          },
+          child: Text(
+            "Профиль",
+            style: TextStyle(color: Colors.green, fontSize: 15),
+          ),
+        ),
+      );
+    }
+    return const SizedBox.shrink(); // Ничего не показываем, если гость
+  }
+
+
   @override
   Widget buildBody(BuildContext context, HomeModel viewModel) {
-    return Column(
-      children: [
-        SizedBox(
-          width: double.infinity,
-          height: 600,
-
-          child: Stack(
-            alignment: Alignment.centerLeft,
-            children: [
-              Image.asset(
-                'assets/images/med_clinic_main.jpg',
-                fit: BoxFit.cover,
-                height: double.infinity,
-                width: double.infinity,
-              ),
-
-              Container(color: Colors.black54),
-
-              Positioned(
-                left: 150,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Центр медецинснской \nпомощи',
-                      style: TextStyle(fontSize: 30, color: Colors.white),
-                    ),
-
-                    SizedBox(height: 25),
-
-                    Text(
-                      'Ваше здоровье - наша забота !',
-                      style: TextStyle(fontSize: 15, color: Colors.white),
-                    ),
-
-                    SizedBox(height: 15),
-
-                    ElevatedButton(
-                      onPressed: () {
-
-                      },
-                      child: Text(
-                        "Запистаься на прием",
-                        style: TextStyle(color: Colors.blue, fontSize: 15),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-
-        Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              const Text('Наши услуги', style: TextStyle(fontSize: 18)),
-              GridView.builder(
-                shrinkWrap: true,
-                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 3,
-                  mainAxisSpacing: 16,
-                  crossAxisSpacing: 16,
-                  childAspectRatio: 6,
-                ),
-                itemCount: viewModel.departments.length,
-                itemBuilder: (context, index) {
-                  final department = viewModel.departments[index];
-                  return Card(child: Center(child: Text(department.name)));
-                },
-              ),
-            ],
-          ),
-        ),
-
-        Padding(
-          padding: EdgeInsets.all(10),
-          child: Container(
+    return SingleChildScrollView( // Заменил Column на SingleChildScrollView, чтобы избежать ошибок переполнения
+      child: Column(
+        children: [
+          SizedBox(
             width: double.infinity,
-            color: Color(0x101C9AEA),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+            height: 600,
+
+            child: Stack(
+              alignment: Alignment.centerLeft,
               children: [
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text(
-                          "Добро пожаловать!",
-                          style: TextStyle(fontSize: 30, color: Colors
-                              .blueAccent),
-                        ),
-                        Text(
-                            '''Здоровье - это самое важное и ценное, что у нас есть. Это основа для достижения всех наших мечт и целей в жизни. Не откладывайте заботу о себе и свих близких на потом. Сегодня - лучшее время начать заботиться о себе и своей семье.
-
-В нашей медицинской клинике мы готовы помочь вам на этом пути к благополучию и процветанию. Наши врачи и медицинский персонал обладают высокой квалификацией и опытом, мы предоставляем широкий спектр медицинских услуг для удовлетворения ваших потребностей.
-
-Не ждите, пока заболеете или проблемы ухудшатся. Запишитесь на прием уже сегодня, позвольте себе заботиться о самом важном - о себе и своих родных.
-
-Сделайте шаг к более здоровой, счастливой и активной жизни. Вместе мы сделаем это возможным! Запишитесь на прием прямо сейчас и уделите себе заслуженное внимание и заботу!''',
-                            style: TextStyle(fontSize: 15)
-                        ),
-
-                        SizedBox(height: 25),
-
-                        ElevatedButton(
-                          onPressed: () {
-                            viewModel;
-                          },
-                          child: Text(
-                            "Записаться на прием",
-                            style: TextStyle(
-                              color: Colors.blue,
-                              fontSize: 15,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
+                Image.asset(
+                  'assets/images/med_clinic_main.jpg',
+                  fit: BoxFit.cover,
+                  height: double.infinity,
+                  width: double.infinity,
                 ),
 
-                Image.asset(
-                  'assets/images/doctor.jpg',
-                  height: 600,
-                  width: 400,
-                  fit: BoxFit.cover,
+                Container(color: Colors.black54),
+
+                Positioned(
+                  left: 150,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Центр медецинснской \nпомощи',
+                        style: TextStyle(fontSize: 30, color: Colors.white),
+                      ),
+
+                      SizedBox(height: 25),
+
+                      Text(
+                        'Ваше здоровье - наша забота !',
+                        style: TextStyle(fontSize: 15, color: Colors.white),
+                      ),
+
+                      SizedBox(height: 15),
+
+                      // --- ИЗМЕНЁННЫЙ БЛОК: КНОПКИ ---
+                      Row(
+                        children: [
+                          _buildRoleSpecificButtons(context),
+                          // Кнопку "Профиль" по твоему запросу на крайнем боку
+                          // лучше разместить в CustomAppBar, но для демонстрации 
+                          // я добавляю её тут
+                          _buildProfileButton(context),
+                        ],
+                      ),
+                      // --- КОНЕЦ ИЗМЕНЁННОГО БЛОКА ---
+
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-        ),
 
-        WhyUsSection(),
+          Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              children: [
+                const Text('Наши услуги', style: TextStyle(fontSize: 18)),
+                GridView.builder(
+                  // ... (Остальной код GridView)
+                  shrinkWrap: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 3,
+                    mainAxisSpacing: 16,
+                    crossAxisSpacing: 16,
+                    childAspectRatio: 6,
+                  ),
+                  itemCount: viewModel.departments.length,
+                  itemBuilder: (context, index) {
+                    final department = viewModel.departments[index];
+                    return Card(child: Center(child: Text(department.name)));
+                  },
+                ),
+              ],
+            ),
+          ),
 
-        WebPageWithFooter(),
-      ],
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Container(
+              width: double.infinity,
+              color: Color(0x101C9AEA),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.all(20.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Добро пожаловать!",
+                            style: TextStyle(fontSize: 30, color: Colors
+                                .blueAccent),
+                          ),
+                          Text(
+                              '''Здоровье - это самое важное и ценное, что у нас есть. Это основа для достижения всех наших мечт и целей в жизни. Не откладывайте заботу о себе и свих близких на потом. Сегодня - лучшее время начать заботиться о себе и своей семье.
+  
+  В нашей медицинской клинике мы готовы помочь вам на этом пути к благополучию и процветанию. Наши врачи и медицинский персонал обладают высокой квалификацией и опытом, мы предоставляем широкий спектр медицинских услуг для удовлетворения ваших потребностей.
+  
+  Не ждите, пока заболеете или проблемы ухудшатся. Запишитесь на прием уже сегодня, позвольте себе заботиться о самом важном - о себе и своих родных.
+  
+  Сделайте шаг к более здоровой, счастливой и активной жизни. Вместе мы сделаем это возможным! Запишитесь на прием прямо сейчас и уделите себе заслуженное внимание и заботу!''',
+                              style: TextStyle(fontSize: 15)
+                          ),
+
+                          SizedBox(height: 25),
+
+                          // --- ИЗМЕНЁННЫЙ БЛОК: КНОПКИ В СЕКЦИИ ---
+                          Row(
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  // Используем ту же логику навигации
+                                  if (currentUserRole == UserRole.PATIENT || currentUserRole == UserRole.ADMIN) {
+                                    context.go('/patient/doctors');
+                                  } else if (currentUserRole == UserRole.DOCTOR) {
+                                    context.go('/doctor/dashboard');
+                                  } else {
+                                    // Гость может перейти на логин или регистрацию
+                                    context.go('/login');
+                                  }
+                                },
+                                child: Text(
+                                  currentUserRole == UserRole.DOCTOR ? "Панель доктора" : "Записаться на прием",
+                                  style: TextStyle(
+                                    color: Colors.blue,
+                                    fontSize: 15,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          // --- КОНЕЦ ИЗМЕНЁННОГО БЛОКА ---
+
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  Image.asset(
+                    'assets/images/doctor.jpg',
+                    height: 600,
+                    width: 400,
+                    fit: BoxFit.cover,
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          WhyUsSection(),
+
+          WebPageWithFooter(),
+        ],
+      ),
     );
   }
 }
