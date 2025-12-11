@@ -39,7 +39,7 @@ class _HomeScreenState extends BaseScreen<HomeScreen, HomeModel> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      'Центр медецинснской \nпомощи',
+                      'Центр медецинской \nпомощи',
                       style: TextStyle(fontSize: 30, color: Colors.white),
                     ),
 
