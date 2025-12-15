@@ -6,7 +6,8 @@ import 'package:hmsweb/auth/rep/AuthRep.dart';
 import 'package:hmsweb/auth/dto/AuthDto.dart';
 import 'package:mailer/mailer.dart';
 import 'package:mailer/smtp_server.dart';
-import 'package:dio/dio.dart'; // <--- ОБЯЗАТЕЛЬНО ДОБАВИТЬ ЭТОТ ИМПОРТ
+import 'package:dio/dio.dart';
+import 'package:hmsweb/GlobalStorage.dart';
 
 class AuthModel extends BaseScreenModel {
   final _rep = AuthRep();
@@ -15,29 +16,67 @@ class AuthModel extends BaseScreenModel {
   String? errorMessage;
   String? _generatedCode;
 
-// --- LOGIN ---
-  Future<AuthDto?> login(String username, String password) async {
-    isLoading = true;
-    notifyListeners();
-    try {
-      return await _rep.login(username: username, password: password);
-    } catch (e) {
-      // Здесь мы перехватываем любую ошибку и ставим понятное сообщение
-      // Вместо технических деталей DioException
-      errorMessage = "Неверный ФИО или пароль";
-      return null;
-    } finally {
-      isLoading = false;
+  bool _isAuthenticated = false;
+  bool get isAuthenticated => _isAuthenticated;
+
+// Функция для проверки токена в хранилище и обновления статуса
+  Future<void> _checkAuthStatus() async {
+    final token = await flutterStorage.read(key: 'accessToken');
+    final wasAuthenticated = _isAuthenticated;
+    _isAuthenticated = token != null;
+
+    // Вызываем notifyListeners только если статус изменился.
+    if (wasAuthenticated != _isAuthenticated) {
       notifyListeners();
     }
   }
 
-  // --- SEND EMAIL ---
+
+// --- LOGIN (ИСПРАВЛЕННЫЙ) ---
+  Future<AuthDto?> login(String username, String password) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      final result = await _rep.login(username: username, password: password);
+
+      // В AuthRep токены должны быть сохранены до того, как результат вернется.
+      if (result != null) {
+        // Обновляем статус после успешного входа
+        await _checkAuthStatus();
+      }
+
+      return result;
+    } on DioException catch (e) {
+      errorMessage = "Неверный ФИО или пароль";
+      return null;
+    } catch (e) {
+      errorMessage = "Неизвестная ошибка";
+      return null;
+    } finally {
+      isLoading = false;
+      // notifyListeners() здесь нужен только для обновления isLoading,
+      // но он может вызвать мерцание. Мы оставим его, чтобы обновить isLoading.
+      notifyListeners();
+    }
+  }
+
+// --- LOGOUT (ИСПРАВЛЕННЫЙ) ---
+  Future<void> logout() async {
+    await flutterStorage.delete(key: 'accessToken');
+    await flutterStorage.delete(key: 'refreshToken');
+    print("🚪 Токены удалены (Выход)");
+
+    // Вместо ручного обновления, вызываем проверочную функцию.
+    // Это гарантирует, что статус обновится на основе пустого хранилища.
+    await _checkAuthStatus();
+  }
+
+  // --- SEND EMAIL (без изменений) ---
   Future<bool> sendOtpEmail(String email) async {
     isLoading = true;
     errorMessage = null;
     notifyListeners();
-
+    // ... остальной код sendOtpEmail
     final code = (Random().nextInt(9000) + 1000).toString();
     _generatedCode = code;
 
@@ -76,7 +115,7 @@ class AuthModel extends BaseScreenModel {
     }
   }
 
-  // --- VERIFY CODE ---
+  // --- VERIFY CODE (без изменений) ---
   bool verifyCode(String inputCode) {
     if (_generatedCode == inputCode.trim()) {
       return true;
@@ -87,7 +126,7 @@ class AuthModel extends BaseScreenModel {
     }
   }
 
-  // --- REGISTER (С ОБРАБОТКОЙ ОШИБКИ 409) ---
+  // --- REGISTER (ИСПРАВЛЕННЫЙ) ---
   Future<AuthDto?> register({
     required String username,
     required String email,
@@ -99,7 +138,7 @@ class AuthModel extends BaseScreenModel {
     isLoading = true;
     notifyListeners();
     try {
-      return await _rep.patientRegister(
+      final result = await _rep.patientRegister(
         username: username,
         email: email,
         password: password,
@@ -107,18 +146,24 @@ class AuthModel extends BaseScreenModel {
         address: address,
         dateOfBirth: dateOfBirth,
       );
+
+      // Если после регистрации сервер сразу возвращает токен (авто-вход)
+      if (result != null) {
+        // Здесь токены должны быть сохранены в AuthRep
+
+        // Обновляем статус после успешной регистрации
+        await _checkAuthStatus();
+      }
+
+      return result;
     } on DioException catch (e) {
-      // Ловим специфические ошибки сервера
       if (e.response?.statusCode == 409) {
-        // 409 Conflict - Пользователь уже существует
         errorMessage = "Пользователь с таким именем или почтой уже существует!";
       } else {
-        // Любые другие ошибки сервера
         errorMessage = "Ошибка сервера: ${e.response?.statusCode}. Попробуйте позже.";
       }
       return null;
     } catch (e) {
-      // Ловим остальные ошибки (например, нет интернета)
       errorMessage = "Произошла ошибка: $e";
       return null;
     } finally {
@@ -128,5 +173,8 @@ class AuthModel extends BaseScreenModel {
   }
 
   @override
-  Future<void> onInitialization() async {}
+  Future<void> onInitialization() async {
+    // Проверяем статус при старте приложения
+    await _checkAuthStatus();
+  }
 }

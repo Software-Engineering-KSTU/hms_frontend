@@ -11,7 +11,6 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  // Контроллеры теперь хранятся в состоянии (State) и не исчезают при перерисовке
   late final TextEditingController usernameController;
   late final TextEditingController passwordController;
 
@@ -24,21 +23,56 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   void dispose() {
-    // Обязательно освобождаем память при закрытии экрана
     usernameController.dispose();
     passwordController.dispose();
     super.dispose();
   }
 
+  // --- НОВЫЙ МЕТОД: Обработка логина ---
+  Future<void> _handleLogin() async {
+    // Используем Provider.of с listen: false, если нужно вызвать метод
+    final authModel = Provider.of<AuthModel>(context, listen: false);
+
+    // Убираем клавиатуру перед запросом
+    FocusScope.of(context).unfocus();
+
+    // Мы передадим context в AuthModel.login, чтобы он сам сделал go('/')
+    // после успешного сохранения токена. Это самый безопасный способ.
+    // AuthModel.login теперь будет возвращать true или false/null.
+    final result = await authModel.login(
+      usernameController.text,
+      passwordController.text,
+    );
+
+    // 1. Проверяем, был ли вход успешным (result != null)
+    if (result != null) {
+      if (mounted) {
+        // 2. Если успех, переходим на главную
+        context.go('/');
+      }
+    } else {
+      // 3. Если ошибка (result == null), показываем SnackBar с ошибкой из модели
+      if (mounted && authModel.errorMessage != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(authModel.errorMessage!),
+            backgroundColor: Colors.redAccent,
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Используем Provider.of без listen: false, чтобы слушать isLoading и errorMessage
     final authModel = Provider.of<AuthModel>(context);
 
     return Container(
       width: 450,
       padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 30),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.85), // Эффект стекла
+        color: Colors.white.withOpacity(0.85),
         borderRadius: BorderRadius.circular(40),
         boxShadow: [
           BoxShadow(
@@ -82,29 +116,9 @@ class _LoginPageState extends State<LoginPage> {
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                onPressed: () async {
-                  // Убираем клавиатуру перед запросом
-                  FocusScope.of(context).unfocus();
-
-                  final result = await authModel.login(
-                    usernameController.text,
-                    passwordController.text,
-                  );
-
-                  if (result != null) {
-                    if (context.mounted) context.go('/');
-                  } else {
-                    if (context.mounted) {
-                      // Показываем сообщение об ошибке (SnackBar), поля при этом НЕ очистятся
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(authModel.errorMessage ?? 'Ошибка входа'),
-                          backgroundColor: Colors.redAccent, // Красный цвет для ошибки
-                        ),
-                      );
-                    }
-                  }
-                },
+                // --- ВЫЗЫВАЕМ НОВЫЙ МЕТОД ---
+                onPressed: _handleLogin,
+                // ---------------------------
                 child: const Text(
                   "Войти",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
@@ -113,6 +127,17 @@ class _LoginPageState extends State<LoginPage> {
             ),
 
           const SizedBox(height: 20),
+
+          // Вывод ошибки, если она есть
+          if (authModel.errorMessage != null && !authModel.isLoading)
+            Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Text(
+                authModel.errorMessage!,
+                style: const TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
 
           const Text("Вы еще не зарегистрированы?", style: TextStyle(color: Colors.black54)),
           const SizedBox(height: 5),

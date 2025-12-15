@@ -2,6 +2,7 @@ import 'package:hmsweb/auth/api/AuthApi.dart';
 import 'package:hmsweb/auth/dto/AuthDto.dart';
 import 'package:dio/dio.dart';
 import 'package:hmsweb/http/HttpRequest.dart';
+import 'package:hmsweb/GlobalStorage.dart';
 
 class AuthRep {
   final _api = AuthApi();

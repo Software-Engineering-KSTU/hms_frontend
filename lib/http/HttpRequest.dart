@@ -1,8 +1,12 @@
+// fileName: lib/http/HttpRequest.dart
 import 'package:dio/dio.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hmsweb/navigation/Navigation.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
+
+// --- ДОБАВЛЯЕМ ИМПОРТ ---
+import 'package:hmsweb/GlobalStorage.dart';
 
 final Dio dioHttpRequest = Dio(
   BaseOptions(
@@ -12,7 +16,8 @@ final Dio dioHttpRequest = Dio(
   ),
 );
 
-final flutterStorage = FlutterSecureStorage();
+// --- УДАЛЯЕМ СТРОКУ НИЖЕ (она создавала конфликт) ---
+// final flutterStorage = FlutterSecureStorage(); <--- УДАЛЕНО
 
 void setUpDioHttpRequest() {
   dioHttpRequest.interceptors.add(AuthInterceptor());
@@ -35,13 +40,13 @@ class HttpRequest {
   late final Dio dio;
 
   HttpRequest({String? baseUrl})
-    : dio = Dio(
-        BaseOptions(
-          baseUrl: baseUrl ?? 'http://127.0.0.1:8080/',
-          connectTimeout: const Duration(seconds: 5),
-          receiveTimeout: const Duration(seconds: 3),
-        ),
-      ) {
+      : dio = Dio(
+    BaseOptions(
+      baseUrl: baseUrl ?? 'http://127.0.0.1:8080/',
+      connectTimeout: const Duration(seconds: 5),
+      receiveTimeout: const Duration(seconds: 3),
+    ),
+  ) {
     dio.interceptors.add(AuthInterceptor());
 
     dio.interceptors.add(
@@ -59,10 +64,10 @@ class HttpRequest {
   }
 
   Future<Response> postRequest(
-    String endpoint, {
-    Map<String, dynamic>? data,
-    Map<String, dynamic>? headers,
-  }) async {
+      String endpoint, {
+        Map<String, dynamic>? data,
+        Map<String, dynamic>? headers,
+      }) async {
     return await dio.post(
       endpoint,
       data: data,
@@ -75,9 +80,10 @@ class HttpRequest {
 class AuthInterceptor extends Interceptor {
   @override
   void onRequest(
-    RequestOptions options,
-    RequestInterceptorHandler handler,
-  ) async {
+      RequestOptions options,
+      RequestInterceptorHandler handler,
+      ) async {
+    // Теперь здесь используется переменная из GlobalStorage.dart
     final token = await flutterStorage.read(key: 'accessToken');
 
     if (token != null) {
