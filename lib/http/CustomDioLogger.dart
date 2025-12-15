@@ -110,8 +110,9 @@ class CustomPrettyDioLogger extends Interceptor {
     if (requestBody && options.method != 'GET') {
       final dynamic data = options.data;
       if (data != null) {
-        if (data is Map) _printMapAsTable(options.data as Map?, header: 'Body');
-        if (data is FormData) {
+        if (data is Map) {
+          _printMapAsTable(options.data as Map?, header: 'Body');
+        } else if (data is FormData) {
           final formDataMap = <String, dynamic>{}
             ..addEntries(data.fields)
             ..addEntries(data.files);
@@ -236,18 +237,6 @@ class CustomPrettyDioLogger extends Interceptor {
 
   void _printLine([String pre = '', String suf = '╝']) =>
       logPrint('$pre${'═' * maxWidth}$suf');
-
-  void _printKV(String? key, Object? v) {
-    final pre = '╟ $key: ';
-    final msg = v.toString();
-
-    if (pre.length + msg.length > maxWidth) {
-      logPrint(pre);
-      _printBlock(msg);
-    } else {
-      logPrint('$pre$msg');
-    }
-  }
 
   void _printBlock(String msg) {
     final lines = (msg.length / maxWidth).ceil();
