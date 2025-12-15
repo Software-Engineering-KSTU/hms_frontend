@@ -1,12 +1,10 @@
-// fileName: lib/http/HttpRequest.dart
 import 'package:dio/dio.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hmsweb/navigation/Navigation.dart';
-import 'package:pretty_dio_logger/pretty_dio_logger.dart';
 
-// --- ДОБАВЛЯЕМ ИМПОРТ ---
 import 'package:hmsweb/GlobalStorage.dart';
+
+import 'CustomDioLogger.dart';
 
 final Dio dioHttpRequest = Dio(
   BaseOptions(
@@ -16,14 +14,11 @@ final Dio dioHttpRequest = Dio(
   ),
 );
 
-// --- УДАЛЯЕМ СТРОКУ НИЖЕ (она создавала конфликт) ---
-// final flutterStorage = FlutterSecureStorage(); <--- УДАЛЕНО
-
 void setUpDioHttpRequest() {
   dioHttpRequest.interceptors.add(AuthInterceptor());
 
   dioHttpRequest.interceptors.add(
-    PrettyDioLogger(
+    CustomPrettyDioLogger(
       requestHeader: true,
       requestBody: true,
       responseHeader: false,
