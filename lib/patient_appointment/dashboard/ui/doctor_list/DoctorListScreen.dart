@@ -38,6 +38,9 @@ class DoctorListScreenState
                     onTap: () {
                       context.push('/patient/dashboard/${doctor.doctorId}');
                     },
+                    onLongPress: () {
+                      context.push('/doctor/resume/${doctor.doctorId}');
+                    },
                     title: Text(doctor.doctorName),
                     subtitle: Text(doctor.specialization),
                   ),

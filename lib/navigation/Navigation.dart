@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hmsweb/doctors_resume/ui/DoctorResumeScreen.dart';
 import 'package:provider/provider.dart';
 
 // Твои импорты
@@ -19,6 +20,7 @@ import 'package:hmsweb/auth/AuthModel.dart';
 
 import '../doctor_appointment/dashboard/ui/DoctorDashboardScreen.dart';
 import '../doctor_appointment/dashboard/ui/DoctorDashboardScreenModel.dart';
+import '../doctors_resume/ui/DoctorResumeModel.dart';
 import '../errorpage/ui/Error404Page.dart';
 import '../patient_appointment/dashboard/ui/PatientDashboardScreen.dart';
 import '../patient_appointment/dashboard/ui/PatientDashboardScreenModel.dart';
@@ -66,8 +68,8 @@ GoRouter createRouter(AuthModel authModel) {
 
     // --- МАГИЯ: Роутер обновляется при изменении AuthModel ---
     refreshListenable: authModel,
-    // --------------------------------------------------------
 
+    // --------------------------------------------------------
     errorPageBuilder: (context, state) {
       return const MaterialPage(key: ValueKey('error'), child: Error404Page());
     },
@@ -84,32 +86,34 @@ GoRouter createRouter(AuthModel authModel) {
         routes: [
           // 1. ГЛАВНАЯ
           buildRoute(
-              path: '/',
-              useTransition: true,
-              isBack: true,
-              screen: HomeScreen(),
-              createModel: (state) => HomeModel()
+            path: '/',
+            useTransition: true,
+            isBack: true,
+            screen: HomeScreen(),
+            createModel: (state) => HomeModel(),
           ),
 
           // 2. ВСЕ ОСТАЛЬНЫЕ СТРАНИЦЫ
           buildRoute(
-              path: '/contacts',
-              useTransition: true,
-              screen: ContactsScreen(),
-              createModel: (state) => ContactsModel()
+            path: '/contacts',
+            useTransition: true,
+            screen: ContactsScreen(),
+            createModel: (state) => ContactsModel(),
           ),
 
           buildRoute(
-              path: '/doctor/dashboard',
-              useTransition: true,
-              screen: DoctorDashboardScreen(),
-              createModel: (state) => DoctorDashboardScreenModel()),
+            path: '/doctor/dashboard',
+            useTransition: true,
+            screen: DoctorDashboardScreen(),
+            createModel: (state) => DoctorDashboardScreenModel(),
+          ),
 
           buildRoute(
-              path: '/patient/doctors',
-              useTransition: true,
-              screen: DoctorListScreen(),
-              createModel: (state) => DoctorListScreenModel()),
+            path: '/patient/doctors',
+            useTransition: true,
+            screen: DoctorListScreen(),
+            createModel: (state) => DoctorListScreenModel(),
+          ),
 
           GoRoute(
             path: '/patient/dashboard',
@@ -122,6 +126,22 @@ GoRouter createRouter(AuthModel authModel) {
                 createModel: (state) {
                   final doctorId = state.pathParameters['doctorId'];
                   return PatientDashboardScreenModel(idDoctor: doctorId!);
+                },
+              ),
+            ],
+          ),
+
+          GoRoute(
+            path: '/doctor/resume',
+            builder: (context, state) => DoctorListScreen(),
+            routes: [
+              buildRoute<DoctorResumeModel>(
+                path: ':doctorId',
+                useTransition: true,
+                screen: DoctorResumeScreen(),
+                createModel: (state) {
+                  final doctorId = state.pathParameters['doctorId'];
+                  return DoctorResumeModel(idDoctor: doctorId!);
                 },
               ),
             ],
@@ -141,8 +161,8 @@ GoRouter createRouter(AuthModel authModel) {
             screen: RegistrationScreen(),
             createModel: (state) => authModel, // <--- Глобальная модель
           ),
-          // ----------------------------------------------------------------
 
+          // ----------------------------------------------------------------
           buildRoute(
             path: '/oops',
             screen: Error500Page(),
@@ -170,10 +190,7 @@ CustomTransitionPage buildPageWithSlide({
       const end = Offset.zero;
       const curve = Curves.easeOutCubic;
       var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-      return SlideTransition(
-        position: animation.drive(tween),
-        child: child,
-      );
+      return SlideTransition(position: animation.drive(tween), child: child);
     },
     transitionDuration: const Duration(milliseconds: 300),
   );
