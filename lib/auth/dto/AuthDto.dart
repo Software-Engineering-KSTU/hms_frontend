@@ -8,6 +8,7 @@ abstract class AuthDto with _$AuthDto {
   const factory AuthDto({
     required String accessToken,
     required String refreshToken,
+    required String role,
   }) = _AuthDto;
 
   factory AuthDto.fromJson(Map<String, dynamic> json) =>

@@ -9,6 +9,8 @@ import 'package:mailer/smtp_server.dart';
 import 'package:dio/dio.dart';
 import 'package:hmsweb/GlobalStorage.dart';
 
+// УБРАЛИ import jwt_decoder, он больше не нужен
+
 class AuthModel extends BaseScreenModel {
   final _rep = AuthRep();
 
@@ -19,29 +21,46 @@ class AuthModel extends BaseScreenModel {
   bool _isAuthenticated = false;
   bool get isAuthenticated => _isAuthenticated;
 
-// Функция для проверки токена в хранилище и обновления статуса
+  String? _role;
+  String? get role => _role;
+
+  // --- ПРОВЕРКА СТАТУСА (при старте приложения) ---
   Future<void> _checkAuthStatus() async {
     final token = await flutterStorage.read(key: 'accessToken');
+    final savedRole = await flutterStorage.read(key: 'role'); // Читаем сохраненную роль
+
     final wasAuthenticated = _isAuthenticated;
     _isAuthenticated = token != null;
 
-    // Вызываем notifyListeners только если статус изменился.
+    // Если мы авторизованы, восстанавливаем роль в оперативную память
+    if (_isAuthenticated) {
+      _role = savedRole;
+      print(">>> СТАТУС ВОССТАНОВЛЕН. ТЕКУЩАЯ РОЛЬ: $_role");
+    }
+
+    // Уведомляем интерфейс, если статус изменился
     if (wasAuthenticated != _isAuthenticated) {
       notifyListeners();
     }
   }
 
 
-// --- LOGIN (ИСПРАВЛЕННЫЙ) ---
+  // --- LOGIN ---
   Future<AuthDto?> login(String username, String password) async {
     isLoading = true;
     notifyListeners();
     try {
       final result = await _rep.login(username: username, password: password);
 
-      // В AuthRep токены должны быть сохранены до того, как результат вернется.
       if (result != null) {
-        // Обновляем статус после успешного входа
+        // 1. Берем роль из ответа сервера (т.к. мы обновили AuthDto)
+        _role = result.role;
+        print(">>> ВЫ ВОШЛИ КАК: $_role");
+
+        // 2. Сохраняем роль в память телефона (чтобы не пропала при перезагрузке)
+        await flutterStorage.write(key: 'role', value: _role);
+
+        // 3. Обновляем статус
         await _checkAuthStatus();
       }
 
@@ -50,25 +69,72 @@ class AuthModel extends BaseScreenModel {
       errorMessage = "Неверный ФИО или пароль";
       return null;
     } catch (e) {
-      errorMessage = "Неизвестная ошибка";
+      errorMessage = "Неизвестная ошибка: $e";
       return null;
     } finally {
       isLoading = false;
-      // notifyListeners() здесь нужен только для обновления isLoading,
-      // но он может вызвать мерцание. Мы оставим его, чтобы обновить isLoading.
       notifyListeners();
     }
   }
 
-// --- LOGOUT (ИСПРАВЛЕННЫЙ) ---
+  // --- LOGOUT ---
   Future<void> logout() async {
+    // Удаляем всё: токены и роль
     await flutterStorage.delete(key: 'accessToken');
     await flutterStorage.delete(key: 'refreshToken');
-    print("🚪 Токены удалены (Выход)");
+    await flutterStorage.delete(key: 'role');
 
-    // Вместо ручного обновления, вызываем проверочную функцию.
-    // Это гарантирует, что статус обновится на основе пустого хранилища.
+    _role = null;
+    print("🚪 Токены и роль удалены (Выход)");
+
     await _checkAuthStatus();
+  }
+
+  // --- REGISTER ---
+  Future<AuthDto?> register({
+    required String username,
+    required String email,
+    required String password,
+    required String phoneNumber,
+    required String address,
+    required String dateOfBirth,
+  }) async {
+    isLoading = true;
+    notifyListeners();
+    try {
+      final result = await _rep.patientRegister(
+        username: username,
+        email: email,
+        password: password,
+        phoneNumber: phoneNumber,
+        address: address,
+        dateOfBirth: dateOfBirth,
+      );
+
+      if (result != null) {
+        // Если регистрация прошла успешно и сервер вернул токены с ролью
+        _role = result.role;
+        await flutterStorage.write(key: 'role', value: _role);
+        print(">>> РЕГИСТРАЦИЯ УСПЕШНА. РОЛЬ: $_role");
+
+        await _checkAuthStatus();
+      }
+
+      return result;
+    } on DioException catch (e) {
+      if (e.response?.statusCode == 409) {
+        errorMessage = "Пользователь с таким именем или почтой уже существует!";
+      } else {
+        errorMessage = "Ошибка сервера: ${e.response?.statusCode}. Попробуйте позже.";
+      }
+      return null;
+    } catch (e) {
+      errorMessage = "Произошла ошибка: $e";
+      return null;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
   // --- SEND EMAIL (без изменений) ---
@@ -76,7 +142,7 @@ class AuthModel extends BaseScreenModel {
     isLoading = true;
     errorMessage = null;
     notifyListeners();
-    // ... остальной код sendOtpEmail
+
     final code = (Random().nextInt(9000) + 1000).toString();
     _generatedCode = code;
 
@@ -106,8 +172,6 @@ class AuthModel extends BaseScreenModel {
       return true;
 
     } catch (e) {
-      print('ОШИБКА ОТПРАВКИ MAILHOG: $e');
-      errorMessage = "Mailhog недоступен, но код в консоли (Демо режим)";
       return true;
     } finally {
       isLoading = false;
@@ -123,52 +187,6 @@ class AuthModel extends BaseScreenModel {
       errorMessage = "Неверный код подтверждения";
       notifyListeners();
       return false;
-    }
-  }
-
-  // --- REGISTER (ИСПРАВЛЕННЫЙ) ---
-  Future<AuthDto?> register({
-    required String username,
-    required String email,
-    required String password,
-    required String phoneNumber,
-    required String address,
-    required String dateOfBirth,
-  }) async {
-    isLoading = true;
-    notifyListeners();
-    try {
-      final result = await _rep.patientRegister(
-        username: username,
-        email: email,
-        password: password,
-        phoneNumber: phoneNumber,
-        address: address,
-        dateOfBirth: dateOfBirth,
-      );
-
-      // Если после регистрации сервер сразу возвращает токен (авто-вход)
-      if (result != null) {
-        // Здесь токены должны быть сохранены в AuthRep
-
-        // Обновляем статус после успешной регистрации
-        await _checkAuthStatus();
-      }
-
-      return result;
-    } on DioException catch (e) {
-      if (e.response?.statusCode == 409) {
-        errorMessage = "Пользователь с таким именем или почтой уже существует!";
-      } else {
-        errorMessage = "Ошибка сервера: ${e.response?.statusCode}. Попробуйте позже.";
-      }
-      return null;
-    } catch (e) {
-      errorMessage = "Произошла ошибка: $e";
-      return null;
-    } finally {
-      isLoading = false;
-      notifyListeners();
     }
   }
 
