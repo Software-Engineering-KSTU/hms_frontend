@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$AuthDto {
 
- String get accessToken; String get refreshToken;
+ String get accessToken; String get refreshToken; String get role;
 /// Create a copy of AuthDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -28,16 +28,16 @@ $AuthDtoCopyWith<AuthDto> get copyWith => _$AuthDtoCopyWithImpl<AuthDto>(this as
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthDto&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is AuthDto&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.role, role) || other.role == role));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,accessToken,refreshToken);
+int get hashCode => Object.hash(runtimeType,accessToken,refreshToken,role);
 
 @override
 String toString() {
-  return 'AuthDto(accessToken: $accessToken, refreshToken: $refreshToken)';
+  return 'AuthDto(accessToken: $accessToken, refreshToken: $refreshToken, role: $role)';
 }
 
 
@@ -48,7 +48,7 @@ abstract mixin class $AuthDtoCopyWith<$Res>  {
   factory $AuthDtoCopyWith(AuthDto value, $Res Function(AuthDto) _then) = _$AuthDtoCopyWithImpl;
 @useResult
 $Res call({
- String accessToken, String refreshToken
+ String accessToken, String refreshToken, String role
 });
 
 
@@ -65,10 +65,11 @@ class _$AuthDtoCopyWithImpl<$Res>
 
 /// Create a copy of AuthDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? accessToken = null,Object? refreshToken = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? accessToken = null,Object? refreshToken = null,Object? role = null,}) {
   return _then(_self.copyWith(
 accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
 as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
+as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -154,10 +155,10 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String accessToken,  String refreshToken)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( String accessToken,  String refreshToken,  String role)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _AuthDto() when $default != null:
-return $default(_that.accessToken,_that.refreshToken);case _:
+return $default(_that.accessToken,_that.refreshToken,_that.role);case _:
   return orElse();
 
 }
@@ -175,10 +176,10 @@ return $default(_that.accessToken,_that.refreshToken);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String accessToken,  String refreshToken)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( String accessToken,  String refreshToken,  String role)  $default,) {final _that = this;
 switch (_that) {
 case _AuthDto():
-return $default(_that.accessToken,_that.refreshToken);case _:
+return $default(_that.accessToken,_that.refreshToken,_that.role);case _:
   throw StateError('Unexpected subclass');
 
 }
@@ -195,10 +196,10 @@ return $default(_that.accessToken,_that.refreshToken);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String accessToken,  String refreshToken)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( String accessToken,  String refreshToken,  String role)?  $default,) {final _that = this;
 switch (_that) {
 case _AuthDto() when $default != null:
-return $default(_that.accessToken,_that.refreshToken);case _:
+return $default(_that.accessToken,_that.refreshToken,_that.role);case _:
   return null;
 
 }
@@ -210,11 +211,12 @@ return $default(_that.accessToken,_that.refreshToken);case _:
 @JsonSerializable()
 
 class _AuthDto implements AuthDto {
-  const _AuthDto({required this.accessToken, required this.refreshToken});
+  const _AuthDto({required this.accessToken, required this.refreshToken, required this.role});
   factory _AuthDto.fromJson(Map<String, dynamic> json) => _$AuthDtoFromJson(json);
 
 @override final  String accessToken;
 @override final  String refreshToken;
+@override final  String role;
 
 /// Create a copy of AuthDto
 /// with the given fields replaced by the non-null parameter values.
@@ -229,16 +231,16 @@ Map<String, dynamic> toJson() {
 
 @override
 bool operator ==(Object other) {
-  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthDto&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken));
+  return identical(this, other) || (other.runtimeType == runtimeType&&other is _AuthDto&&(identical(other.accessToken, accessToken) || other.accessToken == accessToken)&&(identical(other.refreshToken, refreshToken) || other.refreshToken == refreshToken)&&(identical(other.role, role) || other.role == role));
 }
 
 @JsonKey(includeFromJson: false, includeToJson: false)
 @override
-int get hashCode => Object.hash(runtimeType,accessToken,refreshToken);
+int get hashCode => Object.hash(runtimeType,accessToken,refreshToken,role);
 
 @override
 String toString() {
-  return 'AuthDto(accessToken: $accessToken, refreshToken: $refreshToken)';
+  return 'AuthDto(accessToken: $accessToken, refreshToken: $refreshToken, role: $role)';
 }
 
 
@@ -249,7 +251,7 @@ abstract mixin class _$AuthDtoCopyWith<$Res> implements $AuthDtoCopyWith<$Res> {
   factory _$AuthDtoCopyWith(_AuthDto value, $Res Function(_AuthDto) _then) = __$AuthDtoCopyWithImpl;
 @override @useResult
 $Res call({
- String accessToken, String refreshToken
+ String accessToken, String refreshToken, String role
 });
 
 
@@ -266,10 +268,11 @@ class __$AuthDtoCopyWithImpl<$Res>
 
 /// Create a copy of AuthDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = null,Object? refreshToken = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? accessToken = null,Object? refreshToken = null,Object? role = null,}) {
   return _then(_AuthDto(
 accessToken: null == accessToken ? _self.accessToken : accessToken // ignore: cast_nullable_to_non_nullable
 as String,refreshToken: null == refreshToken ? _self.refreshToken : refreshToken // ignore: cast_nullable_to_non_nullable
+as String,role: null == role ? _self.role : role // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
