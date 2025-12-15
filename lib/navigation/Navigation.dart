@@ -37,8 +37,9 @@ GoRoute buildRoute<T extends BaseScreenModel>({
       final model = createModel(state);
       // Если модель глобальная (как authModel), initialize может вызываться лишний раз,
       // но это безопасно, так как мы проверяем статус внутри.
-      model.initialize();
-
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        model.initialize();
+      });
       final child = ChangeNotifierProvider.value(value: model, child: screen);
 
       if (!useTransition) {
