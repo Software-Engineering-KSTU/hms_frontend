@@ -25,6 +25,9 @@ import '../errorpage/ui/Error404Page.dart';
 import '../patient_appointment/dashboard/ui/PatientDashboardScreen.dart';
 import '../patient_appointment/dashboard/ui/PatientDashboardScreenModel.dart';
 
+import 'package:hmsweb/admin_panel/ui/view/AdminUsersView.dart';
+import 'package:hmsweb/admin_panel/ui/AdminUsersModel.dart';
+
 // --- МЕТОД BUILD ROUTE ---
 GoRoute buildRoute<T extends BaseScreenModel>({
   required String path,
@@ -37,8 +40,6 @@ GoRoute buildRoute<T extends BaseScreenModel>({
     path: path,
     pageBuilder: (context, state) {
       final model = createModel(state);
-      // Если модель глобальная (как authModel), initialize может вызываться лишний раз,
-      // но это безопасно, так как мы проверяем статус внутри.
       WidgetsBinding.instance.addPostFrameCallback((_) {
         model.initialize();
       });
@@ -60,31 +61,55 @@ GoRoute buildRoute<T extends BaseScreenModel>({
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
-// --- ГЛАВНОЕ ИЗМЕНЕНИЕ: Теперь это функция, принимающая AuthModel ---
 GoRouter createRouter(AuthModel authModel) {
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
-
-    // --- МАГИЯ: Роутер обновляется при изменении AuthModel ---
     refreshListenable: authModel,
 
-    // --------------------------------------------------------
+    // --- ЛОГИКА ПЕРЕНАПРАВЛЕНИЯ (REDIRECT) ---
+    redirect: (context, state) {
+      final isLoggedIn = authModel.isAuthenticated;
+      final role = authModel.role;
+
+      // Куда пользователь пытается перейти
+      final isGoingToLogin = state.matchedLocation == '/login';
+      final isGoingToRegister = state.matchedLocation == '/registration';
+      final isGoingToAdmin = state.matchedLocation.startsWith('/admin');
+
+      // 1. Если не авторизован и пытается зайти в админку -> на логин
+      if (!isLoggedIn && isGoingToAdmin) {
+        return '/login';
+      }
+
+
+      if (isLoggedIn && (isGoingToLogin || isGoingToRegister || state.matchedLocation == '/')) {
+
+
+        if (role == 'ADMIN') {
+          return '/admin/users';
+        }
+
+        if (role == 'DOCTOR') return '/doctor/dashboard';
+      }
+
+
+      return null;
+    },
+
     errorPageBuilder: (context, state) {
       return const MaterialPage(key: ValueKey('error'), child: Error404Page());
     },
     routes: [
-      // --- ОБОЛОЧКА (SHELL) ---
-      // Всё, что внутри этого списка routes, будет иметь CustomAppBar
       ShellRoute(
         builder: (context, state, child) {
           return Scaffold(
-            appBar: const CustomAppBar(), // <--- Меню обновится автоматически
+            appBar: const CustomAppBar(),
             body: child,
           );
         },
         routes: [
-          // 1. ГЛАВНАЯ
+
           buildRoute(
             path: '/',
             useTransition: true,
@@ -93,7 +118,8 @@ GoRouter createRouter(AuthModel authModel) {
             createModel: (state) => HomeModel(),
           ),
 
-          // 2. ВСЕ ОСТАЛЬНЫЕ СТРАНИЦЫ
+
+
           buildRoute(
             path: '/contacts',
             useTransition: true,
@@ -113,6 +139,12 @@ GoRouter createRouter(AuthModel authModel) {
             useTransition: true,
             screen: DoctorListScreen(),
             createModel: (state) => DoctorListScreenModel(),
+          ),
+          buildRoute(
+            path: '/admin/users',
+            useTransition: true,
+            screen: const AdminUsersView(),
+            createModel: (state) => AdminUsersModel(),
           ),
 
           GoRoute(
@@ -147,22 +179,22 @@ GoRouter createRouter(AuthModel authModel) {
             ],
           ),
 
-          // --- ВАЖНО: Используем переданную authModel, а не создаем новую ---
+
           buildRoute(
             path: '/login',
             useTransition: true,
             screen: LoginScreen(),
-            createModel: (state) => authModel, // <--- Глобальная модель
+            createModel: (state) => authModel,
           ),
 
           buildRoute(
             path: '/registration',
             useTransition: true,
             screen: RegistrationScreen(),
-            createModel: (state) => authModel, // <--- Глобальная модель
+            createModel: (state) => authModel,
           ),
 
-          // ----------------------------------------------------------------
+
           buildRoute(
             path: '/oops',
             screen: Error500Page(),

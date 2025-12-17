@@ -3,7 +3,10 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 part 'DoctorInfoDto.freezed.dart';
 part 'DoctorInfoDto.g.dart';
 
-String _userFromJson(Map<String, dynamic> userJson) {
+String _userFromJson(Map<String, dynamic>? userJson) {
+  if (userJson == null || userJson['username'] == null) {
+    return "Unknown Doctor";
+  }
   return userJson['username'] as String;
 }
 

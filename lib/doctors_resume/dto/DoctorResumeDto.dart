@@ -13,9 +13,9 @@ abstract class DoctorResumeDto with _$DoctorResumeDto {
     required int experienceYears,
     required String education,
     required String certificates,
-    required String photoUrl,
+    String? photoUrl,
     required String description,
-}) = _DoctorResumeDto;
+  }) = _DoctorResumeDto;
 
   factory DoctorResumeDto.fromJson(Map<String, dynamic> json) =>
       _$DoctorResumeDtoFromJson(json);

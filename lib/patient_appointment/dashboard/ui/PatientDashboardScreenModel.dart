@@ -1,5 +1,7 @@
 import 'package:hmsweb/base/BaseScreenModel.dart';
-import 'package:hmsweb/doctor_appointment/dashboard/ui/view/StatusRegistration.dart';
+// import 'package:hmsweb/doctor_appointment/dashboard/ui/view/StatusRegistration.dart';
+import 'package:hmsweb/patient_appointment/dashboard/ui/view/StatusRegistration.dart';
+
 import 'package:hmsweb/patient_appointment/dashboard/rep/PatientDashboardRep.dart';
 
 import '../dto/PatientAppointmentDoctorDto.dart';

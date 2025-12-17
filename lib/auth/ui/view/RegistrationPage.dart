@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:hmsweb/auth/AuthModel.dart';
-import 'package:go_router/go_router.dart';
+import 'package:hmsweb/auth/dto/AuthDialogs.dart';
 
 class RegistrationPage extends StatefulWidget {
-  const RegistrationPage({super.key});
+  final bool isDialog;
+  const RegistrationPage({super.key, this.isDialog = false});
 
   @override
   State<RegistrationPage> createState() => _RegistrationPageState();
 }
 
 class _RegistrationPageState extends State<RegistrationPage> {
-  // Контроллеры
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -21,10 +21,8 @@ class _RegistrationPageState extends State<RegistrationPage> {
   final TextEditingController dateOfBirthController = TextEditingController();
   final TextEditingController codeController = TextEditingController();
 
-  // Состояние: отправлен ли код?
   bool isCodeSent = false;
 
-  // Ошибки полей
   String? usernameError;
   String? emailError;
   String? passwordError;
@@ -33,66 +31,9 @@ class _RegistrationPageState extends State<RegistrationPage> {
   String? dobError;
   String? codeError;
 
-  // --- ЛОГИКА ВАЛИДАЦИИ (Этап 1) ---
   bool validateStep1() {
     bool isValid = true;
-    String? tempUsernameError;
-    String? tempEmailError;
-    String? tempPasswordError;
-    String? tempPhoneError;
-    String? tempAddressError;
-    String? tempDobError;
-
-    // 1. ФИО
-    if (usernameController.text.trim().isEmpty) {
-      tempUsernameError = "Введите ФИО";
-      isValid = false;
-    }
-
-    // 2. Email
-    final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+$');
-    final email = emailController.text.trim();
-    if (email.isEmpty) {
-      tempEmailError = "Введите email";
-      isValid = false;
-    } else if (!emailRegex.hasMatch(email)) {
-      tempEmailError = "Некорректный email";
-      isValid = false;
-    }
-
-    // 3. Пароль
-    if (passwordController.text.length < 6) {
-      tempPasswordError = "Мин. 6 символов";
-      isValid = false;
-    }
-
-    // 4. Телефон
-    if (phoneNumberController.text.trim().isEmpty) {
-      tempPhoneError = "Введите номер";
-      isValid = false;
-    }
-
-    // 5. Адрес
-    if (addressController.text.trim().isEmpty) {
-      tempAddressError = "Введите адрес";
-      isValid = false;
-    }
-
-    // 6. Дата рождения
-    if (dateOfBirthController.text.isEmpty) {
-      tempDobError = "Выберите дату";
-      isValid = false;
-    }
-
-    setState(() {
-      usernameError = tempUsernameError;
-      emailError = tempEmailError;
-      passwordError = tempPasswordError;
-      phoneError = tempPhoneError;
-      addressError = tempAddressError;
-      dobError = tempDobError;
-    });
-
+    if (usernameController.text.isEmpty) isValid = false;
     return isValid;
   }
 
@@ -101,183 +42,127 @@ class _RegistrationPageState extends State<RegistrationPage> {
     final authModel = Provider.of<AuthModel>(context);
 
     return Container(
-      width: 450,
-      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 30),
+      width: 480,
+      constraints: const BoxConstraints(maxHeight: 700),
+      padding: const EdgeInsets.fromLTRB(30, 20, 30, 30),
       decoration: BoxDecoration(
-        color: Colors.white.withOpacity(0.85),
-        borderRadius: BorderRadius.circular(40),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
         boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.1),
-            blurRadius: 20,
-            offset: const Offset(0, 10),
-          ),
+          BoxShadow(color: Colors.blue.withOpacity(0.1), blurRadius: 25),
         ],
       ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          // --- ЗАГОЛОВОК (ПРОСТО ТЕКСТ, БЕЗ ИКОНКИ) ---
-          const Text(
-            "Регистрация",
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.w500,
-              color: Colors.black87,
-            ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              isCodeSent
+                  ? IconButton(
+                onPressed: () => setState(() {
+                  isCodeSent = false;
+                }),
+                icon: const Icon(Icons.arrow_back, color: Color(0xFF1976D2)),
+              )
+                  : const SizedBox(width: 40),
+              const Text(
+                "Регистрация",
+                style: TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF212121),
+                ),
+              ),
+              if (widget.isDialog)
+                IconButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  icon: const Icon(Icons.close, color: Colors.grey),
+                )
+              else
+                const SizedBox(width: 40),
+            ],
           ),
-
-          const SizedBox(height: 30),
-
-          // --- ПОЛЯ ВВОДА ---
-          _buildRoundedField("Введите свое ФИО", controller: usernameController, error: usernameError, enabled: !isCodeSent),
-          _buildRoundedField("Введите свою почту", controller: emailController, error: emailError, enabled: !isCodeSent),
-          _buildRoundedField("Придумайте пароль", controller: passwordController, obscure: true, error: passwordError, enabled: !isCodeSent),
-          _buildRoundedField("Введите свой номер телефона", controller: phoneNumberController, error: phoneError, enabled: !isCodeSent),
-          _buildRoundedField("Введите свой адрес проживания", controller: addressController, error: addressError, enabled: !isCodeSent),
-          _buildDateField(context, "Введите дату рождения", controller: dateOfBirthController, error: dobError, enabled: !isCodeSent),
-
-          // --- ПОЛЕ КОДА ---
-          if (isCodeSent)
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: _buildRoundedField(
-                "Введите код для подтверждения почты",
-                controller: codeController,
-                error: codeError,
-                isCodeField: true,
+          const SizedBox(height: 20),
+          Expanded(
+            child: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _buildMedicalField("ФИО", controller: usernameController, icon: Icons.person_outline, enabled: !isCodeSent),
+                  _buildMedicalField("Email", controller: emailController, icon: Icons.email_outlined, enabled: !isCodeSent),
+                  _buildMedicalField("Пароль", controller: passwordController, obscure: true, icon: Icons.lock_outline, enabled: !isCodeSent),
+                  _buildMedicalField("Телефон", controller: phoneNumberController, icon: Icons.phone_outlined, enabled: !isCodeSent),
+                  _buildMedicalField("Адрес", controller: addressController, icon: Icons.home_outlined, enabled: !isCodeSent),
+                  _buildDateField(context, "Дата рождения", controller: dateOfBirthController, enabled: !isCodeSent),
+                  if (isCodeSent)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 20),
+                      child: Column(
+                        children: [
+                          const Text("Мы отправили код на ваш Email", style: TextStyle(color: Colors.green)),
+                          const SizedBox(height: 10),
+                          _buildMedicalField("Код подтверждения", controller: codeController, icon: Icons.security, isCodeField: true),
+                          if (codeError != null) Text(codeError!, style: const TextStyle(color: Colors.red)),
+                        ],
+                      ),
+                    ),
+                ],
               ),
             ),
-
-          const SizedBox(height: 25),
-
-          // --- ЗОНА КНОПОК (РЯД) ---
-          if (authModel.isLoading)
-            const CircularProgressIndicator()
-          else
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center, // Центрируем кнопки
-              children: [
-
-                // 1. КНОПКА "НАЗАД" (Появляется только на шаге 2)
-                if (isCodeSent) ...[
-                  Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white, // Белый фон для кнопки
-                      shape: BoxShape.circle,
-                      boxShadow: [
-                        BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
-                          blurRadius: 5,
-                          offset: const Offset(0, 2),
-                        )
-                      ],
-                    ),
-                    child: IconButton(
-                      onPressed: () {
-                        setState(() {
-                          isCodeSent = false;
-                          codeError = null;
-                          codeController.clear();
-                        });
-                      },
-                      icon: const Icon(Icons.arrow_back, color: Colors.black87),
-                      tooltip: "Назад",
-                    ),
-                  ),
-                  const SizedBox(width: 15), // Отступ между стрелкой и большой кнопкой
-                ],
-
-                // 2. ОСНОВНАЯ КНОПКА (ДАЛЕЕ / ЗАРЕГИСТРИРОВАТЬСЯ)
-                Expanded(
-                  child: SizedBox(
-                    height: 50,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: isCodeSent
-                            ? const Color(0xFF55C748) // Зеленый
-                            : const Color(0xFFE0E0E0), // Серый
-                        foregroundColor: isCodeSent ? Colors.white : Colors.black87,
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30),
-                          side: isCodeSent
-                              ? BorderSide.none
-                              : const BorderSide(color: Colors.black54, width: 1),
-                        ),
-                      ),
-                      onPressed: () async {
-                        // --- ЛОГИКА "ДАЛЕЕ" ---
-                        if (!isCodeSent) {
-                          if (validateStep1()) {
-                            final success = await authModel.sendOtpEmail(emailController.text.trim());
-                            if (success) {
-                              setState(() {
-                                isCodeSent = true;
-                              });
-                            } else {
-                              if (context.mounted) {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(content: Text(authModel.errorMessage ?? "Ошибка отправки")),
-                                );
-                              }
-                            }
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text("Заполните поля корректно")),
-                            );
-                          }
-                        }
-                        // --- ЛОГИКА "ЗАРЕГИСТРИРОВАТЬСЯ" ---
-                        else {
-                          if (codeController.text.trim().isEmpty) {
-                            setState(() => codeError = "Введите код");
-                            return;
-                          }
-
-                          final isCodeValid = authModel.verifyCode(codeController.text.trim());
-
-                          if (isCodeValid) {
-                            final result = await authModel.register(
-                              username: usernameController.text,
-                              email: emailController.text,
-                              password: passwordController.text,
-                              phoneNumber: phoneNumberController.text,
-                              address: addressController.text,
-                              dateOfBirth: dateOfBirthController.text,
-                            );
-
-                            if (result != null && context.mounted) {
-                              context.go('/');
-                            } else if (context.mounted) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                SnackBar(content: Text(authModel.errorMessage ?? 'Ошибка регистрации')),
-                              );
-                            }
-                          } else {
-                            setState(() => codeError = "Неверный код");
-                          }
-                        }
-                      },
-                      child: Text(
-                        isCodeSent ? "Зарегистрироваться" : "Далее",
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w500),
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-
+          ),
           const SizedBox(height: 20),
-
+          if (authModel.isLoading)
+            const CircularProgressIndicator(color: Color(0xFF1976D2))
+          else
+            SizedBox(
+              width: double.infinity,
+              height: 54,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: isCodeSent ? const Color(0xFF43A047) : const Color(0xFF1976D2),
+                  foregroundColor: Colors.white,
+                  elevation: 4,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                ),
+                onPressed: () async {
+                  if (!isCodeSent) {
+                    final success = await authModel.sendOtpEmail(emailController.text.trim());
+                    if (success) setState(() => isCodeSent = true);
+                  } else {
+                    if (authModel.verifyCode(codeController.text.trim())) {
+                      final result = await authModel.register(
+                        username: usernameController.text,
+                        email: emailController.text,
+                        password: passwordController.text,
+                        phoneNumber: phoneNumberController.text,
+                        address: addressController.text,
+                        dateOfBirth: dateOfBirthController.text,
+                      );
+                      if (result != null && mounted) {
+                        Navigator.pop(context);
+                      }
+                    } else {
+                      setState(() => codeError = "Неверный код");
+                    }
+                  }
+                },
+                child: Text(
+                  isCodeSent ? "Подтвердить и войти" : "Продолжить",
+                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          const SizedBox(height: 16),
           GestureDetector(
             onTap: () {
-              context.go('/login');
+              if (widget.isDialog) {
+                Navigator.pop(context);
+                showLoginDialog(context);
+              }
             },
             child: const Text(
-              "У вас уже есть аккаунт? Войти",
-              style: TextStyle(fontSize: 16, color: Colors.black87),
+              "Уже есть аккаунт? Войти",
+              style: TextStyle(color: Color(0xFF1976D2), fontWeight: FontWeight.bold),
             ),
           ),
         ],
@@ -285,109 +170,64 @@ class _RegistrationPageState extends State<RegistrationPage> {
     );
   }
 
-  // --- UI ПОЛЯ ---
-  Widget _buildRoundedField(
-      String hint, {
-        required TextEditingController controller,
-        bool obscure = false,
-        String? error,
-        bool isCodeField = false,
-        bool enabled = true,
-      }) {
+  Widget _buildMedicalField(String hint, {required TextEditingController controller, bool obscure = false, IconData? icon, bool enabled = true, bool isCodeField = false}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-                color: enabled ? Colors.white : Colors.grey.shade200,
-                borderRadius: BorderRadius.circular(30),
-                border: Border.all(
-                  color: error != null ? Colors.red : Colors.grey.shade400,
-                  width: 1,
-                ),
-                boxShadow: [
-                  if (isCodeField)
-                    BoxShadow(color: Colors.green.withOpacity(0.1), blurRadius: 10)
-                ]
-            ),
-            child: TextField(
-              controller: controller,
-              obscureText: obscure,
-              enabled: enabled,
-              textAlign: TextAlign.center,
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-              ),
-            ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: enabled ? const Color(0xFFF5F7FA) : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(16),
+          border: isCodeField ? Border.all(color: const Color(0xFF43A047)) : Border.all(color: Colors.transparent),
+        ),
+        child: TextField(
+          controller: controller,
+          obscureText: obscure,
+          enabled: enabled,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+            prefixIcon: icon != null ? Icon(icon, color: const Color(0xFF1976D2), size: 20) : null,
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           ),
-          if (error != null)
-            Padding(
-              padding: const EdgeInsets.only(left: 15, top: 4),
-              child: Text(error, style: const TextStyle(color: Colors.red, fontSize: 12)),
-            ),
-        ],
+        ),
       ),
     );
   }
 
-  // --- UI ДАТЫ ---
-  Widget _buildDateField(
-      BuildContext context,
-      String hint, {
-        required TextEditingController controller,
-        String? error,
-        bool enabled = true,
-      }) {
+  Widget _buildDateField(BuildContext context, String hint, {required TextEditingController controller, bool enabled = true}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Container(
-            decoration: BoxDecoration(
-              color: enabled ? Colors.white : Colors.grey.shade200,
-              borderRadius: BorderRadius.circular(30),
-              border: Border.all(
-                color: error != null ? Colors.red : Colors.grey.shade400,
-                width: 1,
-              ),
-            ),
-            child: TextField(
-              controller: controller,
-              readOnly: true,
-              enabled: enabled,
-              textAlign: TextAlign.center,
-              onTap: enabled ? () async {
-                DateTime? picked = await showDatePicker(
-                  context: context,
-                  initialDate: DateTime(2000),
-                  firstDate: DateTime(1900),
-                  lastDate: DateTime.now(),
-                );
-                if (picked != null) {
-                  controller.text = DateFormat('yyyy-MM-dd').format(picked);
-                }
-              } : null,
-              decoration: InputDecoration(
-                hintText: hint,
-                hintStyle: TextStyle(color: Colors.grey.shade600, fontSize: 14),
-                border: InputBorder.none,
-                contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
-                suffixIcon: const Icon(Icons.calendar_today, size: 18, color: Colors.grey),
-              ),
-            ),
+      child: Container(
+        decoration: BoxDecoration(
+          color: enabled ? const Color(0xFFF5F7FA) : Colors.grey.shade100,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: TextField(
+          controller: controller,
+          readOnly: true,
+          enabled: enabled,
+          onTap: enabled
+              ? () async {
+            DateTime? picked = await showDatePicker(
+              context: context,
+              initialDate: DateTime(2000),
+              firstDate: DateTime(1900),
+              lastDate: DateTime.now(),
+            );
+            if (picked != null) {
+              controller.text = DateFormat('yyyy-MM-dd').format(picked);
+            }
+          }
+              : null,
+          decoration: InputDecoration(
+            hintText: hint,
+            hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14),
+            prefixIcon: const Icon(Icons.calendar_today, color: Color(0xFF1976D2), size: 20),
+            border: InputBorder.none,
+            contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
           ),
-          if (error != null)
-            Padding(
-              padding: const EdgeInsets.only(left: 15, top: 4),
-              child: Text(error, style: const TextStyle(color: Colors.red, fontSize: 12)),
-            ),
-        ],
+        ),
       ),
     );
   }

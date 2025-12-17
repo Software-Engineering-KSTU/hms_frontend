@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DoctorResumeDto {
 
- int get id; int get doctorId; String get stage; int get experienceYears; String get education; String get certificates; String get photoUrl; String get description;
+ int get id; int get doctorId; String get stage; int get experienceYears; String get education; String get certificates; String? get photoUrl; String get description;
 /// Create a copy of DoctorResumeDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $DoctorResumeDtoCopyWith<$Res>  {
   factory $DoctorResumeDtoCopyWith(DoctorResumeDto value, $Res Function(DoctorResumeDto) _then) = _$DoctorResumeDtoCopyWithImpl;
 @useResult
 $Res call({
- int id, int doctorId, String stage, int experienceYears, String education, String certificates, String photoUrl, String description
+ int id, int doctorId, String stage, int experienceYears, String education, String certificates, String? photoUrl, String description
 });
 
 
@@ -65,7 +65,7 @@ class _$DoctorResumeDtoCopyWithImpl<$Res>
 
 /// Create a copy of DoctorResumeDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? doctorId = null,Object? stage = null,Object? experienceYears = null,Object? education = null,Object? certificates = null,Object? photoUrl = null,Object? description = null,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? doctorId = null,Object? stage = null,Object? experienceYears = null,Object? education = null,Object? certificates = null,Object? photoUrl = freezed,Object? description = null,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,doctorId: null == doctorId ? _self.doctorId : doctorId // ignore: cast_nullable_to_non_nullable
@@ -73,8 +73,8 @@ as int,stage: null == stage ? _self.stage : stage // ignore: cast_nullable_to_no
 as String,experienceYears: null == experienceYears ? _self.experienceYears : experienceYears // ignore: cast_nullable_to_non_nullable
 as int,education: null == education ? _self.education : education // ignore: cast_nullable_to_non_nullable
 as String,certificates: null == certificates ? _self.certificates : certificates // ignore: cast_nullable_to_non_nullable
-as String,photoUrl: null == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
-as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
+as String?,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
@@ -160,7 +160,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int doctorId,  String stage,  int experienceYears,  String education,  String certificates,  String photoUrl,  String description)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  int doctorId,  String stage,  int experienceYears,  String education,  String certificates,  String? photoUrl,  String description)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DoctorResumeDto() when $default != null:
 return $default(_that.id,_that.doctorId,_that.stage,_that.experienceYears,_that.education,_that.certificates,_that.photoUrl,_that.description);case _:
@@ -181,7 +181,7 @@ return $default(_that.id,_that.doctorId,_that.stage,_that.experienceYears,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int doctorId,  String stage,  int experienceYears,  String education,  String certificates,  String photoUrl,  String description)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  int doctorId,  String stage,  int experienceYears,  String education,  String certificates,  String? photoUrl,  String description)  $default,) {final _that = this;
 switch (_that) {
 case _DoctorResumeDto():
 return $default(_that.id,_that.doctorId,_that.stage,_that.experienceYears,_that.education,_that.certificates,_that.photoUrl,_that.description);case _:
@@ -201,7 +201,7 @@ return $default(_that.id,_that.doctorId,_that.stage,_that.experienceYears,_that.
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int doctorId,  String stage,  int experienceYears,  String education,  String certificates,  String photoUrl,  String description)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  int doctorId,  String stage,  int experienceYears,  String education,  String certificates,  String? photoUrl,  String description)?  $default,) {final _that = this;
 switch (_that) {
 case _DoctorResumeDto() when $default != null:
 return $default(_that.id,_that.doctorId,_that.stage,_that.experienceYears,_that.education,_that.certificates,_that.photoUrl,_that.description);case _:
@@ -216,7 +216,7 @@ return $default(_that.id,_that.doctorId,_that.stage,_that.experienceYears,_that.
 @JsonSerializable()
 
 class _DoctorResumeDto implements DoctorResumeDto {
-  const _DoctorResumeDto({required this.id, required this.doctorId, required this.stage, required this.experienceYears, required this.education, required this.certificates, required this.photoUrl, required this.description});
+  const _DoctorResumeDto({required this.id, required this.doctorId, required this.stage, required this.experienceYears, required this.education, required this.certificates, this.photoUrl, required this.description});
   factory _DoctorResumeDto.fromJson(Map<String, dynamic> json) => _$DoctorResumeDtoFromJson(json);
 
 @override final  int id;
@@ -225,7 +225,7 @@ class _DoctorResumeDto implements DoctorResumeDto {
 @override final  int experienceYears;
 @override final  String education;
 @override final  String certificates;
-@override final  String photoUrl;
+@override final  String? photoUrl;
 @override final  String description;
 
 /// Create a copy of DoctorResumeDto
@@ -261,7 +261,7 @@ abstract mixin class _$DoctorResumeDtoCopyWith<$Res> implements $DoctorResumeDto
   factory _$DoctorResumeDtoCopyWith(_DoctorResumeDto value, $Res Function(_DoctorResumeDto) _then) = __$DoctorResumeDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int id, int doctorId, String stage, int experienceYears, String education, String certificates, String photoUrl, String description
+ int id, int doctorId, String stage, int experienceYears, String education, String certificates, String? photoUrl, String description
 });
 
 
@@ -278,7 +278,7 @@ class __$DoctorResumeDtoCopyWithImpl<$Res>
 
 /// Create a copy of DoctorResumeDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? doctorId = null,Object? stage = null,Object? experienceYears = null,Object? education = null,Object? certificates = null,Object? photoUrl = null,Object? description = null,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? doctorId = null,Object? stage = null,Object? experienceYears = null,Object? education = null,Object? certificates = null,Object? photoUrl = freezed,Object? description = null,}) {
   return _then(_DoctorResumeDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,doctorId: null == doctorId ? _self.doctorId : doctorId // ignore: cast_nullable_to_non_nullable
@@ -286,8 +286,8 @@ as int,stage: null == stage ? _self.stage : stage // ignore: cast_nullable_to_no
 as String,experienceYears: null == experienceYears ? _self.experienceYears : experienceYears // ignore: cast_nullable_to_non_nullable
 as int,education: null == education ? _self.education : education // ignore: cast_nullable_to_non_nullable
 as String,certificates: null == certificates ? _self.certificates : certificates // ignore: cast_nullable_to_non_nullable
-as String,photoUrl: null == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
-as String,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
+as String,photoUrl: freezed == photoUrl ? _self.photoUrl : photoUrl // ignore: cast_nullable_to_non_nullable
+as String?,description: null == description ? _self.description : description // ignore: cast_nullable_to_non_nullable
 as String,
   ));
 }
