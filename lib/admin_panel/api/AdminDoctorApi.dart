@@ -1,28 +1,21 @@
 import 'package:dio/dio.dart';
 import '../../http/HttpRequest.dart';
-// Используем DTO из модуля резюме, чтобы не дублировать код,
-// либо из admin_panel/dto, если вы решили его скопировать.
-// Предполагаю, что мы переиспользуем существующий:
+// Используем DTO из модуля резюме
 import '../../doctors_resume/dto/DoctorResumeDto.dart';
 
 class AdminDoctorApi extends HttpRequest {
 
-  /// Получить резюме врача по ID
-  /// GET /api/doctor-resume/{doctorId}
   Future<DoctorResumeDto> getResume(int doctorId) async {
     try {
       final response = await dioHttpRequest.get('/api/doctor-resume/$doctorId');
       return DoctorResumeDto.fromJson(response.data);
     } on DioException catch (e) {
-      // Если резюме нет (404), можно вернуть null или выбросить ошибку,
-      // в зависимости от того, как хотите обрабатывать это в UI
+      // Если резюме нет (404), пробрасываем ошибку, модель её обработает
       throw Exception(e.response?.data['message'] ?? e.message);
     }
   }
 
-  /// Создать резюме для врача
-  /// POST /api/doctor-resume?doctorId={id}
-  /// Обратите внимание: в контроллере doctorId передается как @RequestParam
+
   Future<DoctorResumeDto> createResume(int doctorId, DoctorResumeDto dto) async {
     try {
       final response = await dioHttpRequest.post(
@@ -36,8 +29,7 @@ class AdminDoctorApi extends HttpRequest {
     }
   }
 
-  /// Обновить резюме врача
-  /// PUT /api/doctor-resume/{doctorId}
+
   Future<DoctorResumeDto> updateResume(int doctorId, DoctorResumeDto dto) async {
     try {
       final response = await dioHttpRequest.put(
@@ -50,11 +42,9 @@ class AdminDoctorApi extends HttpRequest {
     }
   }
 
-  /// Загрузить фото врача
-  /// POST /api/doctor-resume/{doctorId}/photo
+
   Future<String> uploadPhoto(int doctorId, String filePath) async {
     try {
-      // Формируем Multipart запрос
       String fileName = filePath.split('/').last;
       FormData formData = FormData.fromMap({
         "file": await MultipartFile.fromFile(filePath, filename: fileName),
@@ -65,20 +55,37 @@ class AdminDoctorApi extends HttpRequest {
         data: formData,
       );
 
-      // Бэкенд возвращает String (URL)
       return response.data.toString();
     } on DioException catch (e) {
       throw Exception(e.response?.data['message'] ?? e.message);
     }
   }
 
-  /// Удалить фото врача
-  /// DELETE /api/doctor-resume/{doctorId}/photo
+
   Future<void> deletePhoto(int doctorId) async {
     try {
       await dioHttpRequest.delete('/api/doctor-resume/$doctorId/photo');
     } on DioException catch (e) {
       throw Exception(e.response?.data['message'] ?? e.message);
+    }
+  }
+
+
+  Future<void> deleteResume(int doctorId) async {
+    try {
+      await dioHttpRequest.delete('/api/doctor-resume/$doctorId');
+    } on DioException catch (e) {
+      throw Exception(e.response?.data['message'] ?? e.message);
+    }
+  }
+
+
+  Future<List<dynamic>> getAllDoctorsRaw() async {
+    try {
+      final response = await dioHttpRequest.get('/api/appointments/doctors');
+      return response.data as List<dynamic>;
+    } on DioException catch (e) {
+      throw Exception(e.message);
     }
   }
 }

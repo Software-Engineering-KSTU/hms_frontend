@@ -1,11 +1,9 @@
-import '../api/AdminDoctorApi.dart';
-// Импортируем существующий DTO из модуля резюме
-import '../../doctors_resume/dto/DoctorResumeDto.dart';
+import 'package:hmsweb/admin_panel/api/AdminDoctorApi.dart';
+import 'package:hmsweb/doctors_resume/dto/DoctorResumeDto.dart';
 
 class DoctorRepository {
   final AdminDoctorApi _api = AdminDoctorApi();
 
-  /// Получить резюме
   Future<DoctorResumeDto> getResume(int doctorId) async {
     try {
       return await _api.getResume(doctorId);
@@ -14,7 +12,6 @@ class DoctorRepository {
     }
   }
 
-  /// Создать резюме
   Future<DoctorResumeDto> createResume(int doctorId, DoctorResumeDto dto) async {
     try {
       return await _api.createResume(doctorId, dto);
@@ -23,7 +20,6 @@ class DoctorRepository {
     }
   }
 
-  /// Обновить резюме
   Future<DoctorResumeDto> updateResume(int doctorId, DoctorResumeDto dto) async {
     try {
       return await _api.updateResume(doctorId, dto);
@@ -32,7 +28,6 @@ class DoctorRepository {
     }
   }
 
-  /// Загрузить фото
   Future<String> uploadPhoto(int doctorId, String filePath) async {
     try {
       return await _api.uploadPhoto(doctorId, filePath);
@@ -41,12 +36,48 @@ class DoctorRepository {
     }
   }
 
-  /// Удалить фото
   Future<void> deletePhoto(int doctorId) async {
     try {
       await _api.deletePhoto(doctorId);
     } catch (e) {
       rethrow;
+    }
+  }
+
+  Future<void> deleteResume(int doctorId) async {
+    try {
+      await _api.deleteResume(doctorId);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // --- ИСПРАВЛЕННЫЙ МЕТОД ПОИСКА ---
+  Future<int?> findDoctorIdByUserId(int userId) async {
+    try {
+      // 1. Получаем список всех врачей
+      final doctorsList = await _api.getAllDoctorsRaw();
+
+      // 2. Ищем совпадение по User ID внутри JSON
+      // Ожидаем структуру: { "id": 5, "user": { "id": 105, ... } }
+      for (var doc in doctorsList) {
+        if (doc is Map<String, dynamic>) {
+          // Вариант 1: Вложенный объект user
+          final userObj = doc['user'];
+          if (userObj != null && userObj is Map && userObj['id'] == userId) {
+            return doc['id'] as int;
+          }
+
+          // Вариант 2: Плоский JSON (если userId прямо в корне)
+          if (doc['userId'] == userId) {
+            return doc['id'] as int;
+          }
+        }
+      }
+      return null; // Врач не найден
+    } catch (e) {
+      print("Ошибка поиска ID врача: $e");
+      return null;
     }
   }
 }
