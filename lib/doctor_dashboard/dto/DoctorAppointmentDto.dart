@@ -10,7 +10,7 @@ abstract class DoctorAppointmentDto with _$DoctorAppointmentDto {
     required int id,
     required PatientDto patient,
     required String dateTime,
-    required String status,
+    String? status,
     String? symptomsDescribedByPatient,
     String? selfTreatmentMethodsTaken,
   }) = _DoctorAppointmentDto;

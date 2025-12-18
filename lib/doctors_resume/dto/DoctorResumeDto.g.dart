@@ -14,7 +14,7 @@ _DoctorResumeDto _$DoctorResumeDtoFromJson(Map<String, dynamic> json) =>
       experienceYears: (json['experienceYears'] as num).toInt(),
       education: json['education'] as String,
       certificates: json['certificates'] as String,
-      photoUrl: json['photoUrl'] as String,
+      photoUrl: json['photoUrl'] as String?,
       description: json['description'] as String,
     );
 

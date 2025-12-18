@@ -7,7 +7,7 @@ part 'PatientDto.g.dart';
 abstract class PatientDto with _$PatientDto {
   const factory PatientDto({
     required int id,
-    required String username,
+    String? username,
     required String phoneNumber,
     String? address,
     String? birthDate,

@@ -9,7 +9,7 @@ part of 'DoctorInfoDto.dart';
 _DoctorInfoDto _$DoctorInfoDtoFromJson(Map<String, dynamic> json) =>
     _DoctorInfoDto(
       doctorId: (json['id'] as num).toInt(),
-      doctorName: _userFromJson(json['user'] as Map<String, dynamic>),
+      doctorName: _userFromJson(json['user'] as Map<String, dynamic>?),
       specialization: json['specialization'] as String,
     );
 

@@ -1,12 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:provider/provider.dart'; // <--- Импорт провайдера
-import 'package:hmsweb/auth/AuthModel.dart'; // <--- Импорт модели
-
-// --- ИМИТАЦИЯ СОСТОЯНИЯ УДАЛЕНА. Теперь состояние берется из AuthModel. ---
-// const bool isUserAuthenticated = false;
-// const String currentUserRole = 'PATIENT';
-// ---------------------------------------------------------------------------
+import 'package:provider/provider.dart';
+import 'package:hmsweb/auth/AuthModel.dart';
+import 'package:hmsweb/auth/dto/AuthDialogs.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   const CustomAppBar({super.key});
@@ -16,7 +12,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     return AppBar(
       title: Row(
         children: [
-          // Логотип ведет на главную
           TextButton(
             onPressed: () => context.go('/'),
             child: const Text(
@@ -27,12 +22,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           const SizedBox(width: 24),
 
-          // --- 1. ГЛАВНОЕ МЕНЮ (Слева) ---
           const ToggleButtonsGroup(),
 
           const Spacer(),
 
-          // --- 2. КНОПКИ ПРОФИЛЯ/ВХОДА (Справа) ---
           const RoleSpecificButtons(),
         ],
       ),
@@ -51,19 +44,14 @@ class RoleSpecificButtons extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 1. Consumer прослушивает AuthModel и перерисовывает себя при notifyListeners()
     return Consumer<AuthModel>(
       builder: (context, authModel, child) {
         final bool isAuthenticated = authModel.isAuthenticated;
-
-        // Временно используем заглушку для роли, пока ты не добавил ее в AuthModel.
-        // Когда добавишь, замени 'PATIENT' на authModel.userRole!
-        const String currentUserRole = 'PATIENT';
+        final String currentUserRole = authModel.role ?? 'GUEST';
 
         List<Widget> buttons = [];
 
         if (isAuthenticated) {
-          // Если пользователь вошел
 
           if (currentUserRole == 'DOCTOR') {
             buttons.add(_buildPanelButton(context, "Мои записи", '/doctor/dashboard'));
@@ -71,24 +59,21 @@ class RoleSpecificButtons extends StatelessWidget {
             buttons.add(_buildPanelButton(context, "Админ панель", '/admin/dashboard'));
           }
 
-          // Кнопка Профиль
           buttons.add(_buildProfileButton(context, "Профиль", () => context.go('/profile')));
 
-          // Кнопка Выхода (Иконка)
           buttons.add(
             IconButton(
               icon: const Icon(Icons.logout, size: 20, color: Colors.grey),
               onPressed: () async {
-                await authModel.logout(); // Вызываем метод выхода
-                context.go('/login'); // Переходим на страницу входа
+                await authModel.logout();
+                context.go('/');
               },
               tooltip: 'Выход',
             ),
           );
 
         } else {
-          // Если гость -> Кнопка Войти
-          buttons.add(_buildProfileButton(context, "Войти", () => context.go('/login')));
+          buttons.add(_buildProfileButton(context, "Войти", () => showLoginDialog(context)));
         }
 
         return Row(mainAxisSize: MainAxisSize.min, children: buttons);
@@ -134,10 +119,9 @@ class ToggleButtonsGroup extends StatefulWidget {
 class _ToggleButtonsGroupState extends State<ToggleButtonsGroup> {
   int _selectedIndex = 0;
 
-  // --- ИЗМЕНЕНИЕ: Добавили "Запись к врачу" сюда ---
   final List<Map<String, dynamic>> _menuItems = [
     {'title': 'Главная', 'path': '/'},
-    {'title': 'Запись к врачу', 'path': '/patient/doctors'}, // <--- ВСЕГДА АКТИВНА
+    {'title': 'Запись к врачу', 'path': '/patient/doctors'},
     {'title': 'Отделения', 'path': '/departments'},
     {'title': 'Контакты', 'path': '/contacts'},
   ];

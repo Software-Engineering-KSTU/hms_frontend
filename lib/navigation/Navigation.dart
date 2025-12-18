@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hmsweb/doctors_resume/ui/DoctorResumeScreen.dart';
 import 'package:provider/provider.dart';
 
-// Твои импорты
-import 'package:hmsweb/%20clinic_contact_info/ui/ContactsModel.dart';
-import 'package:hmsweb/%20clinic_contact_info/ui/ContactsScreen.dart';
+import 'package:hmsweb/clinic_contact_info/ui/ContactsModel.dart';
+import 'package:hmsweb/clinic_contact_info/ui/ContactsScreen.dart';
+
 import 'package:hmsweb/base/BaseScreenModel.dart';
 import 'package:hmsweb/base/view/CustomAppBar.dart';
 import 'package:hmsweb/errorpage/ui/Error500Page.dart';
@@ -17,155 +16,142 @@ import 'package:hmsweb/patient_appointment/dashboard/ui/doctor_list/DoctorListSc
 import 'package:hmsweb/auth/ui/LoginScreen.dart';
 import 'package:hmsweb/auth/ui/RegistrationScreen.dart';
 import 'package:hmsweb/auth/AuthModel.dart';
+import 'package:hmsweb/patient_appointment/dashboard/ui/PatientDashboardScreen.dart';
+import 'package:hmsweb/patient_appointment/dashboard/ui/PatientDashboardScreenModel.dart';
+import 'package:hmsweb/doctors_resume/ui/DoctorResumeScreen.dart';
+import 'package:hmsweb/doctors_resume/ui/DoctorResumeModel.dart';
+import 'package:hmsweb/admin_panel/ui/view/AdminDashboardScreen.dart';
+import 'package:hmsweb/admin_panel/ui/view/AdminUsersView.dart';
+import 'package:hmsweb/admin_panel/ui/view/CreateDoctorView.dart';
+import 'package:hmsweb/admin_panel/ui/models/AdminUsersModel.dart';
 
-import '../doctor_appointment/dashboard/ui/DoctorDashboardScreen.dart';
-import '../doctor_appointment/dashboard/ui/DoctorDashboardScreenModel.dart';
-import '../doctors_resume/ui/DoctorResumeModel.dart';
-import '../errorpage/ui/Error404Page.dart';
-import '../patient_appointment/dashboard/ui/PatientDashboardScreen.dart';
-import '../patient_appointment/dashboard/ui/PatientDashboardScreenModel.dart';
 
-// --- МЕТОД BUILD ROUTE ---
-GoRoute buildRoute<T extends BaseScreenModel>({
-  required String path,
-  required Widget screen,
-  required T Function(GoRouterState state) createModel,
-  bool useTransition = true,
-  bool isBack = false, // true = свайп слева, false = свайп справа
-}) {
-  return GoRoute(
-    path: path,
-    pageBuilder: (context, state) {
-      final model = createModel(state);
-      // Если модель глобальная (как authModel), initialize может вызываться лишний раз,
-      // но это безопасно, так как мы проверяем статус внутри.
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        model.initialize();
-      });
-      final child = ChangeNotifierProvider.value(value: model, child: screen);
+import 'package:hmsweb/doctor_dashboard/ui/DoctorDashboardScreen.dart';
+import 'package:hmsweb/doctor_dashboard/ui/DoctorDashboardScreenModel.dart';
 
-      if (!useTransition) {
-        return NoTransitionPage(child: child);
-      }
-
-      return buildPageWithSlide(
-        context: context,
-        state: state,
-        child: child,
-        isBack: isBack,
-      );
-    },
-  );
-}
+import 'package:hmsweb/admin_panel/ui/view/AdminDoctorResumeScreen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
 
-// --- ГЛАВНОЕ ИЗМЕНЕНИЕ: Теперь это функция, принимающая AuthModel ---
 GoRouter createRouter(AuthModel authModel) {
   return GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
-
-    // --- МАГИЯ: Роутер обновляется при изменении AuthModel ---
     refreshListenable: authModel,
-
-    // --------------------------------------------------------
-    errorPageBuilder: (context, state) {
-      return const MaterialPage(key: ValueKey('error'), child: Error404Page());
-    },
     routes: [
-      // --- ОБОЛОЧКА (SHELL) ---
-      // Всё, что внутри этого списка routes, будет иметь CustomAppBar
       ShellRoute(
         builder: (context, state, child) {
-          return Scaffold(
-            appBar: const CustomAppBar(), // <--- Меню обновится автоматически
-            body: child,
-          );
+          return child;
         },
         routes: [
-          // 1. ГЛАВНАЯ
+          // ГЛАВНАЯ
           buildRoute(
             path: '/',
-            useTransition: true,
-            isBack: true,
             screen: HomeScreen(),
+            useTransition: false,
             createModel: (state) => HomeModel(),
           ),
 
-          // 2. ВСЕ ОСТАЛЬНЫЕ СТРАНИЦЫ
-          buildRoute(
-            path: '/contacts',
-            useTransition: true,
-            screen: ContactsScreen(),
-            createModel: (state) => ContactsModel(),
-          ),
-
-          buildRoute(
-            path: '/doctor/dashboard',
-            useTransition: true,
-            screen: DoctorDashboardScreen(),
-            createModel: (state) => DoctorDashboardScreenModel(),
-          ),
-
+          // ПАЦИЕНТ: СПИСОК ВРАЧЕЙ
           buildRoute(
             path: '/patient/doctors',
-            useTransition: true,
             screen: DoctorListScreen(),
+            useTransition: false,
             createModel: (state) => DoctorListScreenModel(),
           ),
 
+          // ПАЦИЕНТ: ЗАПИСЬ
           GoRoute(
-            path: '/patient/dashboard',
-            builder: (context, state) => DoctorListScreen(),
-            routes: [
-              buildRoute<PatientDashboardScreenModel>(
-                path: ':doctorId',
-                useTransition: true,
-                screen: PatientDashboardScreen(),
-                createModel: (state) {
-                  final doctorId = state.pathParameters['doctorId'];
-                  return PatientDashboardScreenModel(idDoctor: doctorId!);
-                },
-              ),
-            ],
+            path: '/patient/dashboard/:doctorId',
+            pageBuilder: (context, state) {
+              final doctorId = state.pathParameters['doctorId'] ?? "1";
+              return buildPageWithSlide(
+                context: context,
+                state: state,
+                child: ChangeNotifierProvider(
+                  create: (_) => PatientDashboardScreenModel(idDoctor: doctorId),
+                  child: CustomAppBarWrapper(
+                    child: PatientDashboardScreen(doctorId: doctorId),
+                  ),
+                ),
+              );
+            },
+          ),
+
+          // ПУБЛИЧНОЕ РЕЗЮМЕ
+          buildRoute(
+            path: '/doctor/resume/:doctorId',
+            useTransition: true,
+            screen: const DoctorResumeScreen(),
+            createModel: (state) {
+              final doctorId = state.pathParameters['doctorId'];
+              return DoctorResumeModel(idDoctor: doctorId ?? "1");
+            },
+          ),
+
+          // КОНТАКТЫ
+          buildRoute(
+            path: '/contacts',
+            screen: const ContactsScreen(),
+            useTransition: false,
+            createModel: (state) => ContactsModel(),
+          ),
+
+          // --- КАБИНЕТ ВРАЧА (ИСПРАВЛЕНО) ---
+          buildRoute(
+            path: '/doctor/dashboard',
+            screen: const DoctorDashboardScreen(),
+            useTransition: false,
+            createModel: (state) => DoctorDashboardScreenModel(),
+          ),
+          // ----------------------------------
+
+          // --- АДМИН ПАНЕЛЬ ---
+          GoRoute(
+            path: '/admin/dashboard',
+            pageBuilder: (context, state) => const NoTransitionPage(
+              child: CustomAppBarWrapper(child: AdminDashboardScreen()),
+            ),
           ),
 
           GoRoute(
-            path: '/doctor/resume',
-            builder: (context, state) => DoctorListScreen(),
-            routes: [
-              buildRoute<DoctorResumeModel>(
-                path: ':doctorId',
-                useTransition: true,
-                screen: DoctorResumeScreen(),
-                createModel: (state) {
-                  final doctorId = state.pathParameters['doctorId'];
-                  return DoctorResumeModel(idDoctor: doctorId!);
-                },
-              ),
-            ],
+            path: '/admin/users',
+            builder: (context, state) => ChangeNotifierProvider(
+              create: (_) => AdminUsersModel(),
+              child: const AdminUsersView(),
+            ),
           ),
 
-          // --- ВАЖНО: Используем переданную authModel, а не создаем новую ---
+          GoRoute(
+            path: '/admin/create-doctor',
+            builder: (context, state) => const CreateDoctorView(),
+          ),
+
+          GoRoute(
+            path: '/admin/resume/:id',
+            builder: (context, state) {
+              final userIdStr = state.pathParameters['id'];
+              final userId = int.tryParse(userIdStr ?? '0') ?? 0;
+              return AdminDoctorResumeScreen(userId: userId);
+            },
+          ),
+
+          // --- АВТОРИЗАЦИЯ ---
           buildRoute(
             path: '/login',
             useTransition: true,
-            screen: LoginScreen(),
-            createModel: (state) => authModel, // <--- Глобальная модель
+            screen: const LoginScreen(),
           ),
 
           buildRoute(
             path: '/registration',
             useTransition: true,
-            screen: RegistrationScreen(),
-            createModel: (state) => authModel, // <--- Глобальная модель
+            screen: const RegistrationScreen(),
           ),
 
-          // ----------------------------------------------------------------
           buildRoute(
             path: '/oops',
-            screen: Error500Page(),
+            screen: const Error500Page(),
             useTransition: true,
             createModel: (state) => ErrorScreenModel(),
           ),
@@ -175,7 +161,39 @@ GoRouter createRouter(AuthModel authModel) {
   );
 }
 
-// --- ФУНКЦИЯ АНИМАЦИИ ---
+// ... HELPER FUNCTIONS ...
+
+GoRoute buildRoute<M extends BaseScreenModel>({
+  required String path,
+  required Widget screen,
+  M Function(GoRouterState state)? createModel,
+  bool useTransition = false,
+}) {
+  return GoRoute(
+    path: path,
+    pageBuilder: (context, state) {
+      Widget pageContent = CustomAppBarWrapper(child: screen);
+
+      if (createModel != null) {
+        pageContent = ChangeNotifierProvider<M>(
+          create: (_) => createModel(state),
+          child: pageContent,
+        );
+      }
+
+      if (useTransition) {
+        return buildPageWithSlide(
+          context: context,
+          state: state,
+          child: pageContent,
+        );
+      } else {
+        return NoTransitionPage(child: pageContent);
+      }
+    },
+  );
+}
+
 CustomTransitionPage buildPageWithSlide({
   required BuildContext context,
   required GoRouterState state,
@@ -190,8 +208,25 @@ CustomTransitionPage buildPageWithSlide({
       const end = Offset.zero;
       const curve = Curves.easeOutCubic;
       var tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-      return SlideTransition(position: animation.drive(tween), child: child);
+      var offsetAnimation = animation.drive(tween);
+
+      return SlideTransition(
+        position: offsetAnimation,
+        child: child,
+      );
     },
-    transitionDuration: const Duration(milliseconds: 300),
   );
+}
+
+class CustomAppBarWrapper extends StatelessWidget {
+  final Widget child;
+  const CustomAppBarWrapper({super.key, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: const CustomAppBar(),
+      body: child,
+    );
+  }
 }

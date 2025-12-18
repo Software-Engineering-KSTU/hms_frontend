@@ -3,7 +3,7 @@ import 'package:hmsweb/base/BaseScreen.dart';
 import 'package:hmsweb/doctor_appointment/dashboard/ui/view/TimeSlotsWidget.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-import 'DoctorDashboardScreenModel.dart';
+import 'asdDoctorDashboardScreenModel.dart';
 
 class DoctorDashboardScreen extends StatefulWidget {
   @override
