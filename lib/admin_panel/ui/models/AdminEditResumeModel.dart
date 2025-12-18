@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart'; // <--- Нужно добавить в pubspec.yaml
 import 'package:hmsweb/base/BaseScreenModel.dart';
 import 'package:hmsweb/doctors_resume/dto/DoctorResumeDto.dart';
 import 'package:hmsweb/admin_panel/rep/DoctorRepository.dart';
@@ -7,11 +8,18 @@ class AdminEditResumeModel extends BaseScreenModel {
   final int doctorId;
   final DoctorResumeDto? initialData;
 
-  AdminEditResumeModel({required this.doctorId, this.initialData});
+  AdminEditResumeModel({required this.doctorId, this.initialData}) {
+    _initControllers();
+    // Инициализируем текущее фото при старте
+    currentPhotoUrl = initialData?.photoUrl;
+  }
 
   final DoctorRepository _repository = DoctorRepository();
+  final ImagePicker _picker = ImagePicker(); // Инструмент для галереи
 
-  // --- ИСПРАВЛЕНИЕ: ПЕРЕОПРЕДЕЛЯЕМ ПОЛЕ ОШИБКИ ---
+  // Поле для отображения фото (изменяемое)
+  String? currentPhotoUrl;
+
   @override
   String? errorMessage;
 
@@ -22,14 +30,17 @@ class AdminEditResumeModel extends BaseScreenModel {
   late TextEditingController certificatesController;
   late TextEditingController descriptionController;
 
-  @override
-  Future<void> onInitialization() async {
-    // Инициализируем контроллеры данными, если они есть
+  void _initControllers() {
     stageController = TextEditingController(text: initialData?.stage ?? '');
-    experienceController = TextEditingController(text: initialData?.experienceYears.toString() ?? '');
+    experienceController = TextEditingController(text: initialData?.experienceYears?.toString() ?? '');
     educationController = TextEditingController(text: initialData?.education ?? '');
     certificatesController = TextEditingController(text: initialData?.certificates ?? '');
     descriptionController = TextEditingController(text: initialData?.description ?? '');
+  }
+
+  @override
+  Future<void> onInitialization() async {
+    // Пусто, так как инициализация в конструкторе
   }
 
   @override
@@ -40,6 +51,32 @@ class AdminEditResumeModel extends BaseScreenModel {
     certificatesController.dispose();
     descriptionController.dispose();
     super.dispose();
+  }
+
+  // --- ЛОГИКА ЗАГРУЗКИ ФОТО ---
+  Future<void> pickAndUploadPhoto() async {
+    try {
+      // 1. Открываем галерею
+      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
+
+      if (image == null) return; // Пользователь отменил выбор
+
+      isLoading = true;
+      notifyListeners();
+
+      // 2. Загружаем на сервер
+      // Метод uploadPhoto возвращает URL загруженного файла
+      final String newUrl = await _repository.uploadPhoto(doctorId, image.path);
+
+      // 3. Обновляем UI
+      currentPhotoUrl = newUrl;
+
+    } catch (e) {
+      errorMessage = "Не удалось загрузить фото: $e";
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<bool> saveResume() async {
@@ -54,9 +91,6 @@ class AdminEditResumeModel extends BaseScreenModel {
         return false;
       }
 
-      // Если в DTO поле photoUrl обязательное (String), а у нас может быть null,
-      // нужно передать пустую строку или заглушку, если initialData?.photoUrl == null.
-      // Если вы уже сделали photoUrl: String? в DTO, то код ниже корректен.
       final dto = DoctorResumeDto(
         id: initialData?.id ?? 0,
         doctorId: doctorId,
@@ -65,7 +99,7 @@ class AdminEditResumeModel extends BaseScreenModel {
         education: educationController.text,
         certificates: certificatesController.text,
         description: descriptionController.text,
-        photoUrl: initialData?.photoUrl ?? "", // Добавил ?? "" на случай, если поле required
+        photoUrl: currentPhotoUrl ?? "", // Отправляем актуальную ссылку
       );
 
       if (initialData == null) {
@@ -82,9 +116,5 @@ class AdminEditResumeModel extends BaseScreenModel {
       isLoading = false;
       notifyListeners();
     }
-  }
-
-  Future<void> pickAndUploadPhoto() async {
-    print("Логика выбора файла и вызова _repository.uploadPhoto(doctorId, path)");
   }
 }

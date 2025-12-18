@@ -8,7 +8,8 @@ class PatientDashboardApi extends HttpRequest {
     required String doctorId,
     required String date,
   }) {
-    return dioHttpRequest.post('api/appointments/slots/current-day', data: {
+    // Добавил слэш в начале
+    return dioHttpRequest.post('/api/appointments/slots/current-day', data: {
       'date': date,
       'doctorId': int.tryParse(doctorId),
     });
@@ -17,7 +18,8 @@ class PatientDashboardApi extends HttpRequest {
   Future<Response> postPatientAppointment(
       PatientAppointmentDoctorDto patientAppointment,
       ) {
-    return dioHttpRequest.post('api/appointments/register', data: {
+    // Добавил слэш в начале
+    return dioHttpRequest.post('/api/appointments/register', data: {
       'doctorId': int.tryParse(patientAppointment.doctorId),
       'date': patientAppointment.date,
       'time': patientAppointment.time,
@@ -27,6 +29,7 @@ class PatientDashboardApi extends HttpRequest {
   }
 
   Future<Response> fetchDoctors() {
-    return dioHttpRequest.get('api/appointments/doctors');
+    // Добавил слэш в начале для надежности
+    return dioHttpRequest.get('/api/appointments/doctors');
   }
 }

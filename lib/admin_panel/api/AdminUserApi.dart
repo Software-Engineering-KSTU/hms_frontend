@@ -1,20 +1,29 @@
 import 'package:dio/dio.dart';
-import 'package:hmsweb/http/HttpRequest.dart';
-import 'package:hmsweb/admin_panel/dto/UserDto.dart';
-import 'package:hmsweb/admin_panel/dto/DoctorRequestDto.dart';
-import 'package:hmsweb/auth/dto/AuthDto.dart';
+import 'package:flutter/foundation.dart'; // Обязательно для compute
+import '../../http/HttpRequest.dart';
+import '../dto/UserDto.dart';
+import '../dto/DoctorRequestDto.dart';
+import '../../auth/dto/AuthDto.dart';
+
+// --- ФУНКЦИЯ-ПАРСЕР (Должна быть вне класса) ---
+// Это работает в отдельном изоляте и не тормозит UI
+List<UserDto> _parseUsers(List<dynamic> data) {
+  return data.map((json) => UserDto.fromJson(json)).toList();
+}
 
 class AdminUserApi extends HttpRequest {
 
-  /// Получение списка всех пользователей
   Future<List<UserDto>> getAllUsers() async {
     try {
-      // Вернули /api
       final response = await dioHttpRequest.get('/api/users');
 
       if (response.statusCode == 200) {
         final List<dynamic> data = response.data;
-        return data.map((json) => UserDto.fromJson(json)).toList();
+
+        // ИСПОЛЬЗУЕМ COMPUTE ДЛЯ ПАРСИНГА
+        // Это уберет фризы при загрузке списка
+        return await compute(_parseUsers, data);
+
       } else {
         throw Exception('Failed to load users');
       }
@@ -23,10 +32,8 @@ class AdminUserApi extends HttpRequest {
     }
   }
 
-  /// Регистрация нового доктора
   Future<AuthDto> registerDoctor(DoctorRequestDto dto) async {
     try {
-      // Вернули /api
       final response = await dioHttpRequest.post(
         '/api/auth/doctor-register',
         data: dto.toJson(),
@@ -44,7 +51,6 @@ class AdminUserApi extends HttpRequest {
 
   Future<void> deleteUser(int userId) async {
     try {
-      // Вернули /api
       await dioHttpRequest.delete('/api/admin/users/$userId');
     } on DioException catch (e) {
       throw Exception(e.response?.data['message'] ?? e.message);

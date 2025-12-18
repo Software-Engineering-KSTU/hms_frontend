@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:hmsweb/doctors_resume/dto/DoctorResumeDto.dart';
 import 'package:hmsweb/admin_panel/ui/models/AdminEditResumeModel.dart';
 
@@ -40,7 +41,6 @@ class _EditContent extends StatelessWidget {
         elevation: 0,
         iconTheme: const IconThemeData(color: Color(0xFF212121)),
         actions: [
-          // Кнопка Сохранить в шапке
           TextButton(
             onPressed: model.isLoading
                 ? null
@@ -48,9 +48,9 @@ class _EditContent extends StatelessWidget {
               final success = await model.saveResume();
               if (success && context.mounted) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Изменения сохранены"), backgroundColor: Colors.green),
+                  const SnackBar(content: Text("Сохранено"), backgroundColor: Colors.green),
                 );
-                Navigator.pop(context, true); // Возвращаем true, чтобы обновить предыдущий экран
+                Navigator.pop(context, true);
               }
             },
             child: const Text("Сохранить", style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
@@ -67,61 +67,45 @@ class _EditContent extends StatelessWidget {
             if (model.errorMessage != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 20),
-                child: Container(
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Text(model.errorMessage!, style: TextStyle(color: Colors.red.shade800)),
-                ),
+                child: Text(model.errorMessage!, style: const TextStyle(color: Colors.red)),
               ),
 
-            _buildSectionTitle("Основная информация"),
-            const SizedBox(height: 16),
-            _buildField("Квалификация / Степень", model.stageController, maxLines: 1),
-            _buildField("Стаж (лет)", model.experienceController, isNumber: true),
-
-            const SizedBox(height: 24),
-            _buildSectionTitle("Образование и навыки"),
-            const SizedBox(height: 16),
-            _buildField("Образование (ВУЗ, год)", model.educationController, maxLines: 3),
-            _buildField("Сертификаты", model.certificatesController, maxLines: 3),
-
-            const SizedBox(height: 24),
-            _buildSectionTitle("Подробное описание"),
-            const SizedBox(height: 16),
-            _buildField("О себе, методы лечения", model.descriptionController, maxLines: 6),
-
-            const SizedBox(height: 30),
-            // Кнопка загрузки фото (пока заглушка визуальная)
-            OutlinedButton.icon(
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(content: Text("Функция загрузки фото в разработке")),
-                );
-              },
-              icon: const Icon(Icons.upload_file),
-              label: const Text("Загрузить новое фото"),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: const Color(0xFF1976D2),
-                side: const BorderSide(color: Color(0xFF1976D2)),
-                padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            // --- ФОТО И КНОПКА ЗАГРУЗКИ ---
+            Center(
+              child: Column(
+                children: [
+                  Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(shape: BoxShape.circle, border: Border.all(color: Colors.grey.shade300)),
+                    child: ClipOval(
+                      child: model.currentPhotoUrl != null && model.currentPhotoUrl!.isNotEmpty
+                          ? CachedNetworkImage(
+                        imageUrl: model.currentPhotoUrl!,
+                        fit: BoxFit.cover,
+                        errorWidget: (_, __, ___) => const Icon(Icons.person, size: 60, color: Colors.grey),
+                      )
+                          : const Icon(Icons.person_add, size: 40, color: Colors.grey),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  OutlinedButton.icon(
+                    onPressed: () => model.pickAndUploadPhoto(), // <--- РАБОТАЮЩАЯ КНОПКА
+                    icon: const Icon(Icons.upload_file),
+                    label: const Text("Загрузить фото"),
+                  ),
+                ],
               ),
             ),
+            const SizedBox(height: 30),
+
+            _buildField("Квалификация", model.stageController),
+            _buildField("Стаж (лет)", model.experienceController, isNumber: true),
+            _buildField("Образование", model.educationController, maxLines: 3),
+            _buildField("Сертификаты", model.certificatesController, maxLines: 3),
+            _buildField("О себе", model.descriptionController, maxLines: 5),
           ],
         ),
-      ),
-    );
-  }
-
-  Widget _buildSectionTitle(String title) {
-    return Text(
-      title,
-      style: const TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-        color: Color(0xFF1976D2),
       ),
     );
   }
@@ -135,16 +119,7 @@ class _EditContent extends StatelessWidget {
         keyboardType: isNumber ? TextInputType.number : TextInputType.text,
         decoration: InputDecoration(
           labelText: label,
-          alignLabelWithHint: true,
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Colors.grey),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(12),
-            borderSide: const BorderSide(color: Color(0xFF1976D2), width: 2),
-          ),
-          contentPadding: const EdgeInsets.all(16),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
         ),
       ),
     );

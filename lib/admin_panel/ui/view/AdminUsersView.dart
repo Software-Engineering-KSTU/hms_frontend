@@ -9,7 +9,11 @@ class AdminUsersView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final model = context.watch<AdminUsersModel>();
+    // УБРАЛИ watch отсюда. Теперь build вызывается один раз.
+    // final model = context.watch<AdminUsersModel>();
+
+    // Получаем read для методов (нажатия кнопок), это не вызывает перерисовку
+    final modelRead = context.read<AdminUsersModel>();
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
@@ -24,7 +28,7 @@ class AdminUsersView extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh, color: Color(0xFF1976D2)),
-            onPressed: () => model.fetchUsers(isRefresh: true),
+            onPressed: () => modelRead.fetchUsers(isRefresh: true),
           )
         ],
       ),
@@ -34,56 +38,44 @@ class AdminUsersView extends StatelessWidget {
         icon: const Icon(Icons.add, color: Colors.white),
         label: const Text("Добавить врача", style: TextStyle(color: Colors.white)),
       ),
-      body: model.isLoading
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF1976D2)))
-          : model.errorMessage != null
-          ? Center(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(Icons.error_outline, size: 48, color: Colors.red),
-              const SizedBox(height: 10),
-              Text(
-                model.errorMessage!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: Colors.red),
+      // Consumer следит за изменениями модели ТОЛЬКО в этой части дерева
+      body: Consumer<AdminUsersModel>(
+        builder: (context, model, child) {
+          if (model.isLoading) {
+            return const Center(child: CircularProgressIndicator(color: Color(0xFF1976D2)));
+          }
+
+          if (model.errorMessage != null) {
+            return Center(child: Text(model.errorMessage!, style: const TextStyle(color: Colors.red)));
+          }
+
+          if (model.users.isEmpty) {
+            return const Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.people_outline, size: 64, color: Colors.grey),
+                  SizedBox(height: 16),
+                  Text("Список пользователей пуст", style: TextStyle(fontSize: 18, color: Colors.grey)),
+                ],
               ),
-              const SizedBox(height: 10),
-              ElevatedButton(
-                onPressed: () => model.fetchUsers(isRefresh: true),
-                child: const Text("Повторить"),
-              )
-            ],
-          ),
-        ),
-      )
-          : model.users.isEmpty
-          ? const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.people_outline, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
-              "Список пользователей пуст",
-              style: TextStyle(fontSize: 18, color: Colors.grey),
-            ),
-          ],
-        ),
-      )
-          : ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: model.users.length,
-        separatorBuilder: (ctx, index) => const SizedBox(height: 12),
-        itemBuilder: (context, index) {
-          final user = model.users[index];
-          return _UserCard(
-            user: user,
-            onDelete: () => _confirmDelete(context, model, user),
-            onViewResume: () {
-              context.push('/admin/resume/${user.id}');
+            );
+          }
+
+          return ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: model.users.length,
+            separatorBuilder: (ctx, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final user = model.users[index];
+              return _UserCard(
+                user: user, // Передаем объект
+                // Важно: onDelete вызываем через modelRead, чтобы не дергать watch лишний раз
+                onDelete: () => _confirmDelete(context, modelRead, user),
+                onViewResume: () {
+                  context.push('/admin/resume/${user.id}');
+                },
+              );
             },
           );
         },
@@ -96,8 +88,7 @@ class AdminUsersView extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text("Удалить пользователя?"),
-        content: Text("Вы уверены, что хотите удалить ${user.username} (ID: ${user.id})? Это действие необратимо."),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        content: Text("Вы уверены, что хотите удалить ${user.username} (ID: ${user.id})?"),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -116,6 +107,7 @@ class AdminUsersView extends StatelessWidget {
   }
 }
 
+// Карточку оставляем почти без изменений, она легкая
 class _UserCard extends StatelessWidget {
   final UserDto user;
   final VoidCallback onDelete;
@@ -167,19 +159,12 @@ class _UserCard extends StatelessWidget {
                 children: [
                   Text(
                     user.username,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: Color(0xFF212121),
-                    ),
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Color(0xFF212121)),
                   ),
                   const SizedBox(height: 4),
                   Text(
                     "ID: ${user.id} • ${user.email}",
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF757575),
-                    ),
+                    style: const TextStyle(fontSize: 13, color: Color(0xFF757575)),
                   ),
                   const SizedBox(height: 6),
                   _RoleBadge(role: user.role),
@@ -234,18 +219,8 @@ class _RoleBadge extends StatelessWidget {
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: bgColor,
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Text(
-        text,
-        style: TextStyle(
-          color: textColor,
-          fontSize: 12,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
+      decoration: BoxDecoration(color: bgColor, borderRadius: BorderRadius.circular(8)),
+      child: Text(text, style: TextStyle(color: textColor, fontSize: 12, fontWeight: FontWeight.w600)),
     );
   }
 }

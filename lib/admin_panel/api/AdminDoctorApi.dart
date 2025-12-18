@@ -1,20 +1,24 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart'; // Для compute
 import '../../http/HttpRequest.dart';
-// Используем DTO из модуля резюме
 import '../../doctors_resume/dto/DoctorResumeDto.dart';
+
+// --- ФУНКЦИЯ-ПАРСЕР ДЛЯ СПИСКА ВРАЧЕЙ ---
+List<dynamic> _parseDoctorsRaw(dynamic data) {
+  return data as List<dynamic>;
+}
 
 class AdminDoctorApi extends HttpRequest {
 
   Future<DoctorResumeDto> getResume(int doctorId) async {
     try {
       final response = await dioHttpRequest.get('/api/doctor-resume/$doctorId');
+      // Одиночные объекты можно парсить в главном потоке, это быстро
       return DoctorResumeDto.fromJson(response.data);
     } on DioException catch (e) {
-      // Если резюме нет (404), пробрасываем ошибку, модель её обработает
       throw Exception(e.response?.data['message'] ?? e.message);
     }
   }
-
 
   Future<DoctorResumeDto> createResume(int doctorId, DoctorResumeDto dto) async {
     try {
@@ -29,7 +33,6 @@ class AdminDoctorApi extends HttpRequest {
     }
   }
 
-
   Future<DoctorResumeDto> updateResume(int doctorId, DoctorResumeDto dto) async {
     try {
       final response = await dioHttpRequest.put(
@@ -41,7 +44,6 @@ class AdminDoctorApi extends HttpRequest {
       throw Exception(e.response?.data['message'] ?? e.message);
     }
   }
-
 
   Future<String> uploadPhoto(int doctorId, String filePath) async {
     try {
@@ -61,7 +63,6 @@ class AdminDoctorApi extends HttpRequest {
     }
   }
 
-
   Future<void> deletePhoto(int doctorId) async {
     try {
       await dioHttpRequest.delete('/api/doctor-resume/$doctorId/photo');
@@ -69,7 +70,6 @@ class AdminDoctorApi extends HttpRequest {
       throw Exception(e.response?.data['message'] ?? e.message);
     }
   }
-
 
   Future<void> deleteResume(int doctorId) async {
     try {
@@ -79,11 +79,12 @@ class AdminDoctorApi extends HttpRequest {
     }
   }
 
-
+  // --- ОПТИМИЗИРОВАННЫЙ МЕТОД ---
   Future<List<dynamic>> getAllDoctorsRaw() async {
     try {
       final response = await dioHttpRequest.get('/api/appointments/doctors');
-      return response.data as List<dynamic>;
+      // Переносим обработку в фон, чтобы не фризить UI при поиске ID
+      return await compute(_parseDoctorsRaw, response.data);
     } on DioException catch (e) {
       throw Exception(e.message);
     }
