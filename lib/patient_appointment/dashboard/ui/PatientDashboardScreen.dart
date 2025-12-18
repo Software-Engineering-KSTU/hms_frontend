@@ -7,7 +7,6 @@ import 'package:hmsweb/patient_appointment/dashboard/ui/view/StatusRegistration.
 import 'PatientDashboardScreenModel.dart';
 
 class PatientDashboardScreen extends StatefulWidget {
-  // ДОБАВИЛИ: Принимаем ID врача при переходе на экран
   final String doctorId;
 
   const PatientDashboardScreen({
@@ -24,15 +23,10 @@ class PatientDashboardScreen extends StatefulWidget {
 class PatientDashboardScreenState
     extends BaseScreen<PatientDashboardScreen, PatientDashboardScreenModel> {
 
-  // --- ВАЖНО: СОЗДАЕМ МОДЕЛЬ ЗДЕСЬ ---
-  // Если ваш BaseScreen требует метод createViewModel, он должен выглядеть так:
   @override
   PatientDashboardScreenModel createViewModel() {
     return PatientDashboardScreenModel(idDoctor: widget.doctorId);
   }
-  // Если BaseScreen работает по-другому, убедитесь, что вы создаете
-  // модель именно с widget.doctorId
-  // -------------------------------------
 
   void _showSnackBar(BuildContext context, String message, {bool isError = false}) {
     ScaffoldMessenger.of(context).clearSnackBars();
@@ -86,12 +80,10 @@ class PatientDashboardScreenState
                 focusedDay: viewModel.focusedDay,
                 selectedDayPredicate: (day) => isSameDay(viewModel.selectedDay, day),
                 onDaySelected: (selected, focused) {
-                  // Обновляем календарь визуально
                   setState(() {
                     viewModel.focusedDay = focused;
-                    viewModel.selectedDay = selected; // Важно обновить и здесь для UI
+                    viewModel.selectedDay = selected;
                   });
-                  // Запрашиваем данные у модели
                   viewModel.setDoctorAppointmentsUi(selected);
                 },
                 headerStyle: const HeaderStyle(
@@ -112,15 +104,33 @@ class PatientDashboardScreenState
 
             const SizedBox(height: 30),
 
-            // --- ИНДИКАТОР ЗАГРУЗКИ ---
+            // --- ИНДИКАТОР ЗАГРУЗКИ (SKELETON LOADER) ---
+            // Вместо одной крутилки мы показываем "фейковые" слоты серого цвета.
+            // Это создает ощущение, что интерфейс стабилен.
             if (viewModel.isLoading)
-              const Center(
-                child: Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: CircularProgressIndicator(color: Color(0xFF1976D2)),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                child: Column(
+                  children: [
+                    const SizedBox(height: 24), // Отступ для заголовка "Доступное время"
+                    // Имитация слотов
+                    Wrap(
+                      spacing: 12,
+                      runSpacing: 16,
+                      alignment: WrapAlignment.center,
+                      children: List.generate(18, (index) => Container(
+                        width: 85, // Примерная ширина слота
+                        height: 45, // Примерная высота слота
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade100, // Очень светлый серый
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      )),
+                    ),
+                  ],
                 ),
               )
-            // --- СЛОТЫ ---
+            // --- РЕАЛЬНЫЕ СЛОТЫ ---
             else
               TimeSlotsWidget(
                 status: viewModel.status,

@@ -7,17 +7,22 @@ import '../dto/PatientAppointmentDoctorDto.dart';
 class PatientDashboardScreenModel extends BaseScreenModel {
 
   PatientDashboardScreenModel({required this.idDoctor}) {
-    // Включаем загрузку
+    // Включаем загрузку сразу при создании
     isLoading = true;
-    // ЗАПУСКАЕМ ЛОГИКУ АВТОМАТИЧЕСКИ ПРИ СОЗДАНИИ КЛАССА
+    // Запускаем инициализацию автоматически
     _autoStartInit();
   }
+
+  // --- КЭШ (Хранит данные для дат, чтобы не грузить их повторно) ---
   final Map<String, Map<String, StatusRegistration>> _cache = {};
+
   final String idDoctor;
   String symptomsDescription = "";
   String selfTreatmentMethodsTaken = "";
 
   final _rep = PatientDashboardRep();
+
+  // Текущие отображаемые статусы
   final Map<String, StatusRegistration> status = {};
 
   DateTime focusedDay = DateTime.now();
@@ -45,7 +50,7 @@ class PatientDashboardScreenModel extends BaseScreenModel {
 
     try {
       final now = DateTime.now();
-      // Чистая дата сегодня
+      // Чистая дата сегодня (без времени)
       final todayClean = DateTime(now.year, now.month, now.day);
 
       selectedDay = todayClean;
@@ -57,13 +62,13 @@ class PatientDashboardScreenModel extends BaseScreenModel {
     } catch (e) {
       print("===> ERROR in onInitialization: $e");
     } finally {
-      // Всегда выключаем загрузку в конце
       print("===> FINISH: Инициализация завершена. Выключаем Loader.");
       isLoading = false;
       notifyListeners();
     }
   }
 
+  // Метод вызывается UI при смене даты в календаре
   Future<void> setDoctorAppointmentsUi(DateTime dateInput) async {
     print("===> UI CHANGE: Смена даты на $dateInput");
     isLoading = true;
@@ -78,31 +83,59 @@ class PatientDashboardScreenModel extends BaseScreenModel {
     }
   }
 
-  // Единая логика загрузки
+  // Единая логика загрузки с КЭШИРОВАНИЕМ
   Future<void> _loadDataAndApplyLogic(DateTime dateClean) async {
     status.clear();
     final now = DateTime.now();
     final todayClean = DateTime(now.year, now.month, now.day);
 
+    // Получаем строковое представление даты для ключа кэша и API
+    final dateString = getDateFromDateTime(dateClean);
+
+    // 1. ПРОВЕРКА: Если дата в прошлом
     if (dateClean.isBefore(todayClean)) {
       print("===> LOGIC: Прошлое. Блокируем.");
       _fillAllBusy();
-    } else {
-      final dateString = getDateFromDateTime(dateClean);
-      print("===> NETWORK: Запрос doctorId=$idDoctor, date=$dateString");
+      return;
+    }
 
-      final backendData = await _rep.getDoctorAppointments(
-        doctorId: idDoctor,
-        date: dateString,
-      );
+    // 2. ПРОВЕРКА КЭША: Если данные уже есть в памяти
+    if (_cache.containsKey(dateString)) {
+      print("===> CACHE HIT: Данные найдены в памяти для $dateString!");
 
-      print("===> NETWORK: Пришло записей: ${backendData.length}");
-      status.addAll(backendData);
+      // Берем данные из кэша
+      status.addAll(_cache[dateString]!);
 
+      // Если это СЕГОДНЯ, нужно всё равно применить фильтр времени (время идет вперед)
       if (dateClean.isAtSameMomentAs(todayClean)) {
-        print("===> LOGIC: Сегодня. Фильтруем время.");
+        print("===> LOGIC: Это сегодня (из кэша). Обновляем фильтр времени.");
         _applyTimeFilter(now);
       }
+
+      // Выходим, сеть не трогаем
+      return;
+    }
+
+    // 3. ЗАГРУЗКА ИЗ СЕТИ (Если в кэше нет)
+    print("===> NETWORK: Данных нет в кэше. Запрос doctorId=$idDoctor, date=$dateString");
+
+    final backendData = await _rep.getDoctorAppointments(
+      doctorId: idDoctor,
+      date: dateString,
+    );
+
+    print("===> NETWORK: Пришло записей: ${backendData.length}");
+
+    // 4. СОХРАНЯЕМ В КЭШ
+    _cache[dateString] = backendData;
+
+    // Обновляем текущий статус
+    status.addAll(backendData);
+
+    // 5. Фильтр времени для сегодняшнего дня
+    if (dateClean.isAtSameMomentAs(todayClean)) {
+      print("===> LOGIC: Сегодня. Фильтруем время.");
+      _applyTimeFilter(now);
     }
   }
 
@@ -120,8 +153,12 @@ class PatientDashboardScreenModel extends BaseScreenModel {
         final minute = int.parse(parts[1]);
         final slotTime = DateTime(now.year, now.month, now.day, hour, minute);
 
-        if (slotTime.isBefore(now) && status[timeStr] != StatusRegistration.mine) {
-          status[timeStr] = StatusRegistration.busy;
+        // Если время слота прошло
+        if (slotTime.isBefore(now)) {
+          // Если это НЕ моя запись, помечаем как "занято"
+          if (status[timeStr] != StatusRegistration.mine) {
+            status[timeStr] = StatusRegistration.busy;
+          }
         }
       } catch (e) { /* ignore */ }
     }
@@ -142,9 +179,21 @@ class PatientDashboardScreenModel extends BaseScreenModel {
       symptomsDescription: symptomsDescription,
       selfTreatmentMethodsTaken: selfTreatmentMethodsTaken,
     );
+
     final result = await _rep.postPatientAppointment(patientAppointment);
+
     if (result) {
+      // 1. Обновляем текущий UI
       status[time] = StatusRegistration.mine;
+
+      // 2. ОБНОВЛЯЕМ КЭШ (чтобы при возврате на этот день запись осталась)
+      final dateKey = getDateFromDateTime(dateToSend);
+      if (_cache.containsKey(dateKey)) {
+        // Обновляем конкретный слот в сохраненной карте
+        _cache[dateKey]![time] = StatusRegistration.mine;
+        print("===> CACHE UPDATE: Обновили запись в кэше для $dateKey");
+      }
+
       notifyListeners();
     }
   }

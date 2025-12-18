@@ -23,11 +23,12 @@ import 'package:hmsweb/doctors_resume/ui/DoctorResumeModel.dart';
 import 'package:hmsweb/admin_panel/ui/view/AdminDashboardScreen.dart';
 import 'package:hmsweb/admin_panel/ui/view/AdminUsersView.dart';
 import 'package:hmsweb/admin_panel/ui/view/CreateDoctorView.dart';
-import 'package:hmsweb/doctor_appointment/dashboard/ui/DoctorDashboardScreen.dart';
-import 'package:hmsweb/doctor_appointment/dashboard/ui/DoctorDashboardScreenModel.dart';
 import 'package:hmsweb/admin_panel/ui/models/AdminUsersModel.dart';
 
-// Убедитесь, что этот файл существует, иначе закомментируйте
+
+import 'package:hmsweb/doctor_dashboard/ui/DoctorDashboardScreen.dart';
+import 'package:hmsweb/doctor_dashboard/ui/DoctorDashboardScreenModel.dart';
+
 import 'package:hmsweb/admin_panel/ui/view/AdminDoctorResumeScreen.dart';
 
 final GlobalKey<NavigatorState> rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -59,30 +60,23 @@ GoRouter createRouter(AuthModel authModel) {
             createModel: (state) => DoctorListScreenModel(),
           ),
 
-          // --- ИСПРАВЛЕННЫЙ МАРШРУТ (ЗАПИСЬ) ---
-          // Мы не используем buildRoute, чтобы вручную передать doctorId в экран
+          // ПАЦИЕНТ: ЗАПИСЬ
           GoRoute(
             path: '/patient/dashboard/:doctorId',
             pageBuilder: (context, state) {
-              // 1. Извлекаем ID из URL
               final doctorId = state.pathParameters['doctorId'] ?? "1";
-
-              // 2. Создаем экран и модель
               return buildPageWithSlide(
                 context: context,
                 state: state,
                 child: ChangeNotifierProvider(
-                  // Передаем ID в модель
                   create: (_) => PatientDashboardScreenModel(idDoctor: doctorId),
                   child: CustomAppBarWrapper(
-                    // Передаем ID в экран (ЭТО ГЛАВНОЕ ИСПРАВЛЕНИЕ)
                     child: PatientDashboardScreen(doctorId: doctorId),
                   ),
                 ),
               );
             },
           ),
-          // -------------------------------------
 
           // ПУБЛИЧНОЕ РЕЗЮМЕ
           buildRoute(
@@ -103,16 +97,16 @@ GoRouter createRouter(AuthModel authModel) {
             createModel: (state) => ContactsModel(),
           ),
 
-          // КАБИНЕТ ВРАЧА
+          // --- КАБИНЕТ ВРАЧА (ИСПРАВЛЕНО) ---
           buildRoute(
             path: '/doctor/dashboard',
-            screen: DoctorDashboardScreen(),
+            screen: const DoctorDashboardScreen(),
             useTransition: false,
             createModel: (state) => DoctorDashboardScreenModel(),
           ),
+          // ----------------------------------
 
           // --- АДМИН ПАНЕЛЬ ---
-
           GoRoute(
             path: '/admin/dashboard',
             pageBuilder: (context, state) => const NoTransitionPage(
@@ -133,7 +127,6 @@ GoRouter createRouter(AuthModel authModel) {
             builder: (context, state) => const CreateDoctorView(),
           ),
 
-          // МАРШРУТ С ОШИБКОЙ (Если AdminDoctorResumeScreen существует)
           GoRoute(
             path: '/admin/resume/:id',
             builder: (context, state) {
@@ -144,7 +137,6 @@ GoRouter createRouter(AuthModel authModel) {
           ),
 
           // --- АВТОРИЗАЦИЯ ---
-
           buildRoute(
             path: '/login',
             useTransition: true,

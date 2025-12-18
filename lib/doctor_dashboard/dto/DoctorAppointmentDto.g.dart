@@ -12,7 +12,7 @@ _DoctorAppointmentDto _$DoctorAppointmentDtoFromJson(
   id: (json['id'] as num).toInt(),
   patient: PatientDto.fromJson(json['patient'] as Map<String, dynamic>),
   dateTime: json['dateTime'] as String,
-  status: json['status'] as String,
+  status: json['status'] as String?,
   symptomsDescribedByPatient: json['symptomsDescribedByPatient'] as String?,
   selfTreatmentMethodsTaken: json['selfTreatmentMethodsTaken'] as String?,
 );

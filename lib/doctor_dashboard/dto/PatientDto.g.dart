@@ -8,7 +8,7 @@ part of 'PatientDto.dart';
 
 _PatientDto _$PatientDtoFromJson(Map<String, dynamic> json) => _PatientDto(
   id: (json['id'] as num).toInt(),
-  username: json['username'] as String,
+  username: json['username'] as String?,
   phoneNumber: json['phoneNumber'] as String,
   address: json['address'] as String?,
   birthDate: json['birthDate'] as String?,

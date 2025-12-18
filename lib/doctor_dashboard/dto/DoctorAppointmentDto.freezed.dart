@@ -15,7 +15,7 @@ T _$identity<T>(T value) => value;
 /// @nodoc
 mixin _$DoctorAppointmentDto {
 
- int get id; PatientDto get patient; String get dateTime; String get status; String? get symptomsDescribedByPatient; String? get selfTreatmentMethodsTaken;
+ int get id; PatientDto get patient; String get dateTime; String? get status; String? get symptomsDescribedByPatient; String? get selfTreatmentMethodsTaken;
 /// Create a copy of DoctorAppointmentDto
 /// with the given fields replaced by the non-null parameter values.
 @JsonKey(includeFromJson: false, includeToJson: false)
@@ -48,7 +48,7 @@ abstract mixin class $DoctorAppointmentDtoCopyWith<$Res>  {
   factory $DoctorAppointmentDtoCopyWith(DoctorAppointmentDto value, $Res Function(DoctorAppointmentDto) _then) = _$DoctorAppointmentDtoCopyWithImpl;
 @useResult
 $Res call({
- int id, PatientDto patient, String dateTime, String status, String? symptomsDescribedByPatient, String? selfTreatmentMethodsTaken
+ int id, PatientDto patient, String dateTime, String? status, String? symptomsDescribedByPatient, String? selfTreatmentMethodsTaken
 });
 
 
@@ -65,13 +65,13 @@ class _$DoctorAppointmentDtoCopyWithImpl<$Res>
 
 /// Create a copy of DoctorAppointmentDto
 /// with the given fields replaced by the non-null parameter values.
-@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? patient = null,Object? dateTime = null,Object? status = null,Object? symptomsDescribedByPatient = freezed,Object? selfTreatmentMethodsTaken = freezed,}) {
+@pragma('vm:prefer-inline') @override $Res call({Object? id = null,Object? patient = null,Object? dateTime = null,Object? status = freezed,Object? symptomsDescribedByPatient = freezed,Object? selfTreatmentMethodsTaken = freezed,}) {
   return _then(_self.copyWith(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,patient: null == patient ? _self.patient : patient // ignore: cast_nullable_to_non_nullable
 as PatientDto,dateTime: null == dateTime ? _self.dateTime : dateTime // ignore: cast_nullable_to_non_nullable
-as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,symptomsDescribedByPatient: freezed == symptomsDescribedByPatient ? _self.symptomsDescribedByPatient : symptomsDescribedByPatient // ignore: cast_nullable_to_non_nullable
+as String,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String?,symptomsDescribedByPatient: freezed == symptomsDescribedByPatient ? _self.symptomsDescribedByPatient : symptomsDescribedByPatient // ignore: cast_nullable_to_non_nullable
 as String?,selfTreatmentMethodsTaken: freezed == selfTreatmentMethodsTaken ? _self.selfTreatmentMethodsTaken : selfTreatmentMethodsTaken // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
@@ -167,7 +167,7 @@ return $default(_that);case _:
 /// }
 /// ```
 
-@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  PatientDto patient,  String dateTime,  String status,  String? symptomsDescribedByPatient,  String? selfTreatmentMethodsTaken)?  $default,{required TResult orElse(),}) {final _that = this;
+@optionalTypeArgs TResult maybeWhen<TResult extends Object?>(TResult Function( int id,  PatientDto patient,  String dateTime,  String? status,  String? symptomsDescribedByPatient,  String? selfTreatmentMethodsTaken)?  $default,{required TResult orElse(),}) {final _that = this;
 switch (_that) {
 case _DoctorAppointmentDto() when $default != null:
 return $default(_that.id,_that.patient,_that.dateTime,_that.status,_that.symptomsDescribedByPatient,_that.selfTreatmentMethodsTaken);case _:
@@ -188,7 +188,7 @@ return $default(_that.id,_that.patient,_that.dateTime,_that.status,_that.symptom
 /// }
 /// ```
 
-@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  PatientDto patient,  String dateTime,  String status,  String? symptomsDescribedByPatient,  String? selfTreatmentMethodsTaken)  $default,) {final _that = this;
+@optionalTypeArgs TResult when<TResult extends Object?>(TResult Function( int id,  PatientDto patient,  String dateTime,  String? status,  String? symptomsDescribedByPatient,  String? selfTreatmentMethodsTaken)  $default,) {final _that = this;
 switch (_that) {
 case _DoctorAppointmentDto():
 return $default(_that.id,_that.patient,_that.dateTime,_that.status,_that.symptomsDescribedByPatient,_that.selfTreatmentMethodsTaken);case _:
@@ -208,7 +208,7 @@ return $default(_that.id,_that.patient,_that.dateTime,_that.status,_that.symptom
 /// }
 /// ```
 
-@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  PatientDto patient,  String dateTime,  String status,  String? symptomsDescribedByPatient,  String? selfTreatmentMethodsTaken)?  $default,) {final _that = this;
+@optionalTypeArgs TResult? whenOrNull<TResult extends Object?>(TResult? Function( int id,  PatientDto patient,  String dateTime,  String? status,  String? symptomsDescribedByPatient,  String? selfTreatmentMethodsTaken)?  $default,) {final _that = this;
 switch (_that) {
 case _DoctorAppointmentDto() when $default != null:
 return $default(_that.id,_that.patient,_that.dateTime,_that.status,_that.symptomsDescribedByPatient,_that.selfTreatmentMethodsTaken);case _:
@@ -223,13 +223,13 @@ return $default(_that.id,_that.patient,_that.dateTime,_that.status,_that.symptom
 @JsonSerializable()
 
 class _DoctorAppointmentDto implements DoctorAppointmentDto {
-  const _DoctorAppointmentDto({required this.id, required this.patient, required this.dateTime, required this.status, this.symptomsDescribedByPatient, this.selfTreatmentMethodsTaken});
+  const _DoctorAppointmentDto({required this.id, required this.patient, required this.dateTime, this.status, this.symptomsDescribedByPatient, this.selfTreatmentMethodsTaken});
   factory _DoctorAppointmentDto.fromJson(Map<String, dynamic> json) => _$DoctorAppointmentDtoFromJson(json);
 
 @override final  int id;
 @override final  PatientDto patient;
 @override final  String dateTime;
-@override final  String status;
+@override final  String? status;
 @override final  String? symptomsDescribedByPatient;
 @override final  String? selfTreatmentMethodsTaken;
 
@@ -266,7 +266,7 @@ abstract mixin class _$DoctorAppointmentDtoCopyWith<$Res> implements $DoctorAppo
   factory _$DoctorAppointmentDtoCopyWith(_DoctorAppointmentDto value, $Res Function(_DoctorAppointmentDto) _then) = __$DoctorAppointmentDtoCopyWithImpl;
 @override @useResult
 $Res call({
- int id, PatientDto patient, String dateTime, String status, String? symptomsDescribedByPatient, String? selfTreatmentMethodsTaken
+ int id, PatientDto patient, String dateTime, String? status, String? symptomsDescribedByPatient, String? selfTreatmentMethodsTaken
 });
 
 
@@ -283,13 +283,13 @@ class __$DoctorAppointmentDtoCopyWithImpl<$Res>
 
 /// Create a copy of DoctorAppointmentDto
 /// with the given fields replaced by the non-null parameter values.
-@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? patient = null,Object? dateTime = null,Object? status = null,Object? symptomsDescribedByPatient = freezed,Object? selfTreatmentMethodsTaken = freezed,}) {
+@override @pragma('vm:prefer-inline') $Res call({Object? id = null,Object? patient = null,Object? dateTime = null,Object? status = freezed,Object? symptomsDescribedByPatient = freezed,Object? selfTreatmentMethodsTaken = freezed,}) {
   return _then(_DoctorAppointmentDto(
 id: null == id ? _self.id : id // ignore: cast_nullable_to_non_nullable
 as int,patient: null == patient ? _self.patient : patient // ignore: cast_nullable_to_non_nullable
 as PatientDto,dateTime: null == dateTime ? _self.dateTime : dateTime // ignore: cast_nullable_to_non_nullable
-as String,status: null == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
-as String,symptomsDescribedByPatient: freezed == symptomsDescribedByPatient ? _self.symptomsDescribedByPatient : symptomsDescribedByPatient // ignore: cast_nullable_to_non_nullable
+as String,status: freezed == status ? _self.status : status // ignore: cast_nullable_to_non_nullable
+as String?,symptomsDescribedByPatient: freezed == symptomsDescribedByPatient ? _self.symptomsDescribedByPatient : symptomsDescribedByPatient // ignore: cast_nullable_to_non_nullable
 as String?,selfTreatmentMethodsTaken: freezed == selfTreatmentMethodsTaken ? _self.selfTreatmentMethodsTaken : selfTreatmentMethodsTaken // ignore: cast_nullable_to_non_nullable
 as String?,
   ));
